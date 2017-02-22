@@ -1,5 +1,6 @@
 version: '2'
 services:
+  # Name of the container
   ES_1:
     image: elasticsearch:latest
     volumes:
@@ -15,3 +16,6 @@ services:
     ports:
       - "9201:9200"
       - "9301:9300"
+
+# Automatically creates a docker network for these containers so they can
+# reference each other easily
