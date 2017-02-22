@@ -1,0 +1,46 @@
+# Docker Lunch and Learn
+- Intro
+  - What is it good for
+  - Why do we use it
+  - Disadvantages
+    - Caveat/blessing, depending on how you look at it, is that you have to
+      do your own environment configuration
+
+- Pull image
+  - docker pull [namespace/image_name:tag]
+- Write Dockerfile
+- Build image
+  - `docker build -t [namespace/image_name:tag] [base_dir]`
+- Inspect images
+  - `docker images`
+- Run image
+  - `docker run [image]`
+- Run image in background
+  - `docker run -d [image]
+- Inspecting running containers
+  - `docker ps`
+- Push image
+  - `docker login`
+  - `docker push`
+- Debugging containers
+  - `docker logs`
+  - `docker attach` - seeing output
+  - `docker exec`
+    - Getting bash shell in container
+    - Running additional process in container
+- Communicating from host to container
+  - Expose ports
+  - Inspect IP
+    - `docker inspect`
+- Communicating between containers
+  - Linking containers
+  - Docker networks
+    - `docker network inspect`
+- docker-compose
+- OPTIONAL: Communicating from host to docker-compose network
+- OPTIONAL: Communicating from another container to docker-compose network
+  - `docker run --network etc.`
+
+- Best practices?
+  - using alpine instead of ubuntu
+  - jenkins docker plugin
