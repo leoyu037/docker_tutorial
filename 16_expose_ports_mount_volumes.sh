@@ -8,3 +8,5 @@ docker run --name ES -p 9200:9200 -v $(pwd)/resources:/resources -d elasticsearc
 
 # We can now communicate w/ elasticsearch
 # curl localhost:9200
+
+echo Waiting for ES to initialize. Sleeping 15...; sleep 15
