@@ -22,7 +22,7 @@ Here are a bunch of examples that are meant to be run __IN ORDER__. You're on yo
 | Run image in background                 | `docker run -d [image]`                                 |
 | Interactive mode                        | `docker run -it [image]`                                |
 | Remove container after exit             | `docker run --rm [image]`                               |
-| Expose port                             | `docker run -p [container_port]:[host_port] [...]`      |
+| Expose port                             | `docker run -p [host_port]:[container_port] [...]`      |
 | Mount volume                            | `docker run -v [host_abs_path]:[container_path] [...]`  |
 | Link container                          | `docker run --link [container]:[alias] [...]`           |
 | Join network                            | `docker run --network [network] [...]`                  |
