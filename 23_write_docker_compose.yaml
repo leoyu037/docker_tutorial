@@ -1,0 +1,17 @@
+version: '2'
+services:
+  ES_1:
+    image: elasticsearch:latest
+    volumes:
+      - ./resources:/resources
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  ES_2:
+    image: elasticsearch:latest
+    volumes:
+      - ./resources:/resources
+    ports:
+      - "9201:9200"
+      - "9301:9300"

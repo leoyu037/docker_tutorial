@@ -24,12 +24,12 @@
   - `docker push`
 - Debugging containers
   - `docker logs`
-  - `docker attach` - seeing output
   - `docker exec`
     - Getting bash shell in container
     - Running additional process in container
 - Communicating from host to container
   - Expose ports
+  - Mounting volumes
   - Inspect IP
     - `docker inspect`
 - Communicating between containers
@@ -38,9 +38,13 @@
     - `docker network inspect`
 - docker-compose
 - OPTIONAL: Communicating from host to docker-compose network
+  - Just like communicating w/ any regular docker container
 - OPTIONAL: Communicating from another container to docker-compose network
   - `docker run --network etc.`
 
 - Best practices?
   - using alpine instead of ubuntu
   - jenkins docker plugin
+- Other stuff
+  - Python docker client
+  - `pip install docker`
