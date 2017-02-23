@@ -55,4 +55,6 @@ Here are a bunch of examples that are meant to be run __IN ORDER__. You're on yo
 | Show docker-compose container status    | `docker-compose ps`                                     |
 | Show docker-compose container logs      | `docker-compose logs`                                   |
 | Stop docker-compose                     | `docker-compose down`                                   |
+| Get updated images for each service     | `docker-compose pull`                                   |
 |                                         |                                                         |
+
