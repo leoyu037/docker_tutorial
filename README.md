@@ -1,10 +1,10 @@
 # Docker Tutorial
 
-Here are a bunch of examples that are meant to be run __IN ORDER__. You're on your own if you don't and end up breaking something. But don't worry, the error messages are pretty informative.
+Here are a bunch of examples that are meant to be read and run __IN ORDER__. You're on your own if you don't and end up breaking something. But don't worry, the error messages are pretty informative :)
 
 ## Cheatsheet
 
-`[image]` can be as simple as `[image_name]` but can optionally include namespace and/or tag: `[namespace]/[image_name]:[tag]`
+__NOTE__: `[image]` can be as simple as `[image_name]` but can optionally include namespace and/or tag: `[namespace]/[image_name]:[tag]`
 
 | Operation                               | Example                                                 |
 | --------------------------------------- | ------------------------------------------------------- |
