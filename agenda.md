@@ -5,46 +5,15 @@
   - Disadvantages
     - Caveat/blessing, depending on how you look at it, is that you have to
       do your own environment configuration
-
-- Pull image
-  - docker pull [namespace/image_name:tag]
-- Write Dockerfile
-- Build image
-  - `docker build -t [namespace/image_name:tag] [base_dir]`
-- Inspect images
-  - `docker images`
-- Run image
-  - `docker run [image]`
-- Run image in background
-  - `docker run -d [image]
-- Inspecting running containers
-  - `docker ps`
-- Push image
-  - `docker login`
-  - `docker push`
-- Debugging containers
-  - `docker logs`
-  - `docker exec`
-    - Getting bash shell in container
-    - Running additional process in container
-- Communicating from host to container
-  - Expose ports
-  - Mounting volumes
-  - Inspect IP
-    - `docker inspect`
-- Communicating between containers
-  - Linking containers
-  - Docker networks
-    - `docker network inspect`
-- docker-compose
-- OPTIONAL: Communicating from host to docker-compose network
-  - Just like communicating w/ any regular docker container
-- OPTIONAL: Communicating from another container to docker-compose network
-  - `docker run --network etc.`
-
+- Demo
+  - OPTIONAL: Communicating from host to docker-compose network
+    - Just like communicating w/ any regular docker container
+  - OPTIONAL: Communicating from another container to docker-compose network
+    - `docker run --network etc.`
+  - OPTIONAL: Show feeds pipeline docker-compose
 - Best practices?
-  - using alpine instead of ubuntu
-  - jenkins docker plugin
+  - using alpine instead of ubuntu as a base image
 - Other stuff
   - Python docker client
   - `pip install docker`
+  - jenkins docker plugin
