@@ -34,6 +34,8 @@ __NOTE__: `[image]` can be as simple as `[image_name]` but can optionally includ
 | Join network                            | `docker run --network [network] [...]`                  |
 | Remove image                            | `docker rmi [image]`                                    |
 | Force removal                           | `docker rmi -f [image]`                                 |
+| Remove all images                       | `docker rmi $(docker images -q)`                        |
+| Clean cached image fragments            | `docker rmi $(docker images -fq dangling=true)`         |
 |                                         |                                                         |
 | __Container Operations__                |                                                         |
 | Show running containers                 | `docker ps`                                             |
@@ -47,6 +49,8 @@ __NOTE__: `[image]` can be as simple as `[image_name]` but can optionally includ
 | Stop container                          | `docker stop [container]`                               |
 | Remove container                        | `docker rm [container]`                                 |
 | Force removal                           | `docker rm -f [container]`                              |
+| Remove exited containers                | `docker rm $(docker ps --filter status-exited -q)`      |
+| Remove all containers                   | `docker rm $(docker ps -aq)`                            |
 |                                         |                                                         |
 | __Network Operations__                  |                                                         |
 | Show networks                           | `docker network ls`                                     |
