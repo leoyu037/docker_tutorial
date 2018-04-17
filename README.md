@@ -57,14 +57,19 @@ __NOTE__: `[image]` can be as simple as `[image_name]` but can optionally includ
 | Create network                          | `docker network create [network]`                       |
 | Inspect network                         | `docker network inspect [network]`                      |
 | Remove network                          | `docker network rm [network]`                           |
+| Remove unused networks                  | `docker network prune --force`                          |
 |                                         |                                                         |
 | __Docker Compose__                      |                                                         |
 | Start docker-compose                    | `docker-compose up`                                     |
 | Specify docker-compose config to use    | `docker-compose -f [docker_compose_config] [...]`       |
 | Start in background                     | `docker-compose up -d`                                  |
-| Show docker-compose container status    | `docker-compose ps`                                     |
-| Show docker-compose container logs      | `docker-compose logs`                                   |
-| Stop docker-compose                     | `docker-compose down`                                   |
+| Execute command in a container          | `docker-compose exec [service] [cmd]                    |
+| Show docker-compose service statsu      | `docker-compose ps`                                     |
+| Show docker-compose service logs        | `docker-compose logs`                                   |
+| Tail logs for a set of services         | `docker-compose logs --tail [n_lines] -f [services]     |
+| Stop docker-compose                     | `docker-compose kill`                                   |
+| Stop and clean docker-compose           | `docker-compose down`                                   |
+| Build images defined in docker-compose  | `docker-compose build`                                  |
 | Get updated images for each service     | `docker-compose pull`                                   |
 |                                         |                                                         |
 
