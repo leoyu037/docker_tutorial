@@ -73,3 +73,28 @@ __NOTE__: `[image]` can be as simple as `[image_name]` but can optionally includ
 | Get updated images for each service     | `docker-compose pull`                                   |
 |                                         |                                                         |
 
+## Advanced Usage
+
+##### Integrating multiple docker-compose configurations
+
+If you're maintaining multiple projects that each require docker-compose to
+bring up and you frequently need to integrate such projects together, there are
+several ways to configure the docker networking, but the cleanest way is to
+run the docker-compose configurations under the same project name:
+
+```bash
+export COMPOSE_PROJECT_NAME={some_name}
+docker-compose -f {docker-compose-1} up -d
+docker-compose -f {docker-compose-2} up -d
+
+# OR
+
+docker-compose -f {compose_cfg_1} -p {some_name} up -d
+docker-compose -f {compose_cfg_2} -p {some_name} up -d
+```
+
+Running docker-compose with the same project name has the convenient side
+effect of starting all services in the same docker network, since
+docker-compose names the default network after the project name. Thus all
+services across all docker-compose configs will be connected to the same
+network without having to make any configuration changes.
