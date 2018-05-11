@@ -1,6 +1,6 @@
 # Docker Tutorial
 
-Here are a bunch of examples that are meant to be __read and run in order__. You're on your own if you don't and end up breaking something. But don't worry, the error messages are pretty informative :)
+Here are a bunch of examples that are meant to be __read and run in order__.
 
 ```bash
 > cat ./00_setup.sh
