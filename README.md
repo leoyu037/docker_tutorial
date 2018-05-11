@@ -1,12 +1,20 @@
 # Docker Tutorial
 
-Here are a bunch of examples that are meant to be read and run __IN ORDER__. You're on your own if you don't and end up breaking something. But don't worry, the error messages are pretty informative :)
+Here are a bunch of examples that are meant to be __read and run in order__. You're on your own if you don't and end up breaking something. But don't worry, the error messages are pretty informative :)
 
 ```bash
+> cat ./00_setup.sh
 > source ./00_setup.sh
+> cat ./01_pull_image.sh
 > source ./01_pull_image.sh
 > ...
 ```
+
+## Requirements
+
+- [Docker](https://store.docker.com/search?offering=community&type=edition)
+    - Also available via homebrew for macOS
+- [Dockerhub Account](https://hub.docker.com/)
 
 ## Cheatsheet
 
@@ -63,10 +71,10 @@ __NOTE__: `[image]` can be as simple as `[image_name]` but can optionally includ
 | Start docker-compose                    | `docker-compose up`                                     |
 | Specify docker-compose config to use    | `docker-compose -f [docker_compose_config] [...]`       |
 | Start in background                     | `docker-compose up -d`                                  |
-| Execute command in a container          | `docker-compose exec [service] [cmd]                    |
+| Execute command in a container          | `docker-compose exec [service] [cmd]`                   |
 | Show docker-compose service statsu      | `docker-compose ps`                                     |
 | Show docker-compose service logs        | `docker-compose logs`                                   |
-| Tail logs for a set of services         | `docker-compose logs --tail [n_lines] -f [services]     |
+| Tail logs for a set of services         | `docker-compose logs --tail [n_lines] -f [services]`    |
 | Stop docker-compose                     | `docker-compose kill`                                   |
 | Stop and clean docker-compose           | `docker-compose down`                                   |
 | Build images defined in docker-compose  | `docker-compose build`                                  |
