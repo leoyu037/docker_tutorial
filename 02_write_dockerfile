@@ -7,13 +7,10 @@ RUN apt-get update && \
     apt-get upgrade -y
 RUN apt-get install -y vim curl
 
-# We can set the default directory that things run from and add stuff into
+# We can set the default directory that things run from and copy our source into
 # the image
 WORKDIR /app
 ADD resources/2_some.txt /app
 
 # Upon starting, will run "/bin/sh echo hello world!"
-# CMD "echo hello world!"
-
-# Upon start, will run "/bin/echo hello world!"
-CMD ["echo", "hello world!"]
+CMD "echo hello world!"
