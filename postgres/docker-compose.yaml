@@ -1,0 +1,23 @@
+version: '3'
+services:
+  owner_db:
+    image: postgres:11-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+    ports:
+      - 5433:5432
+    volumes:
+      - ./data/owner-setup.sql:/docker-entrypoint-initdb.d/owner-setup.sql
+
+  pet_db:
+    image: postgres:10-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+    ports:
+      - 5434:5432
+    volumes:
+      - ./data/pet-setup.sql:/docker-entrypoint-initdb.d/pet-setup.sql

@@ -1,0 +1,5 @@
+.cicd/
+.git/
+docker-compose.yaml
+Dockerfile
+README.md
