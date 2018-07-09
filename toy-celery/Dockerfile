@@ -4,12 +4,17 @@ ENV DIR /srv
 WORKDIR ${DIR}
 
 # Install system dependencies
-RUN apk update && \
-    apk add --no-cache \
+RUN apk add --update --no-cache \
         bash \
         curl \
         postgresql-dev && \
     rm -rf /var/cache/apk/*
+
+# Install psycopg2
+RUN apk add --update --no-cache --virtual build-dependencies \
+        gcc musl-dev && \
+    pip install psycopg2 && \
+    apk del build-dependencies
 
 # Install python dependencies
 COPY ./setup.py ${DIR}/

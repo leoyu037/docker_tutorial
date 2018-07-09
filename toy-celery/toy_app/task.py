@@ -57,6 +57,7 @@ def _etl(psql_host, psql_port, sql, es_host, es_index, id_field):
             result['failed_items'].append(item)
         else:
             result['success'] += 1
+    print('{} ETL result: {}'.format(es_index, result))
     return result
 
 

@@ -27,6 +27,7 @@ class PostgresDBConnection():
     def __enter__(self):
         """ Open and return db connection """
         try:
+            # print('Opening postgres connection')
             self.conn = self._connection()
         except psycopg2.DatabaseError as exc:
             print(f'Error: {exc}')
@@ -44,5 +45,5 @@ class PostgresDBConnection():
         else:
             self.conn.commit()
 
-        print('Attempting to close postgres connection')
+        # print('Attempting to close postgres connection')
         self.conn.close()
