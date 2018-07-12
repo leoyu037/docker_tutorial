@@ -28,14 +28,9 @@ git clone https://github.com/leoyu037/docker_tutorial .
 cd docker_tutorial/
 ```
 
+--------------------------------------------------------------------------------
+
 ## Exercise 1
-
-- Go to the first exercise directory:
-
-  ```bash
-  # From docker_tutorial:
-  > cd exercise-1/
-  ```
 
 Creating and sharing reusable images is a big part of the Docker philosophy, so
 we're going to start the tutorial by working with a pre-existing image that the
@@ -123,12 +118,13 @@ Elasticsearch developers build and maintain.
     "tagline" : "You Know, for Search"
   }
 
-  > curl localhost:9200/_cat/indices?v
+  > curl 'localhost:9200/_cat/indices?v'
+  
   health status index uuid pri rep docs.count docs.deleted store.size pri.store.size
   # No indexes have been created
   ```
     
-- So our Elasticsearch container has no data in it, which is pretty boring. Let's seed it with some data by mounting a volume into the container at startup. First, we should shut down our Elasticsearch container.
+- So our Elasticsearch container has no data in it, which is pretty boring. Let's seed it with some data by mounting a volume into the container at startup. First, we should shut down our existing Elasticsearch container:
   
   ```bash
   # Reference the container by either name or id:
@@ -145,8 +141,8 @@ Elasticsearch developers build and maintain.
   Now create a new Elasticsearch instance with some seed data:
   
   ```bash
-  # From docker_tutorial/exercise-1/
-  > cd elasticsearch/
+  # From docker_tutorial/:
+  > cd exercise-1/elasticsearch/
   
   # We're going to use an officially supported image this time. If you try to create a container
   # from an image that you don't have stored locally, Docker will try to download the image first.
@@ -214,6 +210,47 @@ Elasticsearch developers build and maintain.
     }
   }
   ```
+
+### Introducing Docker Compose
+
+As we've seen, the docker commands to start containers can get pretty cumbersome, especially when working with multiple containers at once. Enter Docker Compose, a handy container orchestration tool for saving and starting container configurations. Running plain Docker commands is sometimes appropriate, but a most of the time it's easier to write a `docker-compose.yaml` and use Docker Compose to work with frequently used setups.
   
-- As we've seen, the docker commands to start containers can get pretty long, and this can get really cumbersome when working with multiple containers at once. Enter Docker Compose, a handy container orchestration tool for saving and starting container configurations.
+- Continuing with our Elasticsearch example, we can turn our Docker command into a `docker-compose.yaml`:
+
+  ```bash
+  # From docker_tutorial/:
+  > cd exercise-1/elasticsearch/
+  > cat docker-compose.yaml
+  ```
   
+  TODO: explain docker-compose.yaml
+
+  ```yaml
+  # docker-compose.yaml
+  version: '3'
+  services:
+    elasticsearch:
+      image: docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+      environment:
+        discovery.type: single-node
+      ports:
+        - 9200:9200
+      volumes:
+        - ./data/:/usr/share/elasticsearch/data/
+  ```
+  
+- If we start our Docker Compose configuration, we'll have the same exact setup as before:
+  
+  ```bash
+  > docker-compose up -d
+  
+  # 'docker-compose.yaml/yml' is the standard name of docker-compose configurations, so we
+  # don't need to explicitly pass in a filename
+  # -d: start containers in the background
+  ```
+
+In the rest of this tutorial, we'll introduce most features by using plain Docker commands and then switch over to using Docker Compose for convenience.
+
+--------------------------------------------------------------------------------
+
+## Exercise 2
