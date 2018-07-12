@@ -46,11 +46,12 @@ Elasticsearch developers build and maintain.
   page](https://hub.docker.com/_/elasticsearch/). Here, you'll see documentation
   for how to use the image along with a list of image tags (read: versions)
   available for use. The `tags` tab contains a more exhaustive list of tags.
+  
   (__NOTE__: you'll see that the official Elasticsearch repo has been
   deprecated because Elasticsearch has chosen to self-host its Docker
   images--ignore for now).
   
-  ![Official Elasticsearch Repo](https://octodex.github.com/images/yaktocat.png)
+  ![Official Elasticsearch Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/official-elasticsearch-repo-screenshot.png)
 
 - Let's download the latest Elasticsearch as our first image:
 
@@ -73,3 +74,47 @@ Elasticsearch developers build and maintain.
     ```
 
     You should see `elasticsearch:latest` in your list of downloaded images.
+
+- Start Elasticsearch and examine your running containers:
+
+    ```bash
+    docker run -p 9200:9200 -d elasticsearch:latest
+    
+    # -p: map local port to container port. 
+    #     Elasticsearch runs on port 9200 by default inside the container. 
+    #     We need this mapping in order to be able to access the container port locally.
+    # -d: run the container in the background.
+    
+    docker ps
+    ```
+    
+    You should see your new container running with the port mapped.
+
+- Take note of the container's name from the output of the `docker ps` command and use it to examine the container's logs:
+
+    ```bash
+    docker logs -f <container_name>
+    
+    # -f: (follow) show new logs as they are generated
+    ```
+    
+- Query Elasticsearch:
+
+    ```bash
+    > curl localhost:9200/
+    
+    # You should see something along the lines of the following to confirm that Elasticsearch is healthy:
+    {
+      "name" : "8DfH16I",
+      "cluster_name" : "elasticsearch",
+      "cluster_uuid" : "fTN23epwSc-YZdOTkdsxDw",
+      "version" : {
+        "number" : "5.6.10",
+        "build_hash" : "b727a60",
+        "build_date" : "2018-06-06T15:48:34.860Z",
+        "build_snapshot" : false,
+        "lucene_version" : "6.6.1"
+      },
+      "tagline" : "You Know, for Search"
+    }
+    ```
