@@ -1,3 +1,4 @@
+""" Document mappings/schemas for tutorial data model """
 from elasticsearch_dsl import DocType, Text, Integer
 
 

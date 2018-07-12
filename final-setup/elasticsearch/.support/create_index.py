@@ -1,3 +1,10 @@
+"""
+Script to populate an Elasticsearch instance with seed data.
+
+It will create an 'owner' index and a 'pet' index, each with a document
+mapping/schema defined in documents.py. Then it will load some sample data into
+each index.
+"""
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Index
 
