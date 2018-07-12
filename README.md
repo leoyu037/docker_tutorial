@@ -13,7 +13,7 @@ end of these, exercises you should be able to:
 
 ## Requirements
 
-This tutorial assumes that you already have Docker installed and an account on
+This tutorial assumes that you already have Docker installed and an account on 
 Dockerhub per the requirements below.
 
 - [Docker](https://store.docker.com/search?offering=community&type=edition)
@@ -27,6 +27,12 @@ First, clone this repository:
 git clone https://github.com/leoyu037/docker_tutorial .
 cd docker_tutorial/
 ```
+
+## Reference
+
+If case you don't understand something or get lost or stuck, here are a few helpful links with more in-depth explanations of various features:
+
+__TODO__: docker command reference, docker compose command reference
 
 --------------------------------------------------------------------------------
 
