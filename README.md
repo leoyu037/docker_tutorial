@@ -70,13 +70,11 @@ Elasticsearch developers build and maintain.
 - Examine our local images:
 
   ```bash
-  > docker image ls
+  > docker images
 
   REPOSITORY                                      TAG                 IMAGE ID            CREATED             SIZE
-  elasticsearch                                   latest              bbb1111fe3d3        9 days ago          486MB
+  elasticsearch                                   latest              <image_id>          9 days ago          486MB
   ```
-
-  You should see `elasticsearch:latest` in your list of downloaded images.
 
 - Start Elasticsearch and examine our running containers:
 
@@ -90,12 +88,13 @@ Elasticsearch developers build and maintain.
 
   > docker ps
 
-  # You should see your new container running w/ the port mapped, along with the container name:
+  # You should see your new container running w/ the port mapped, along with 
+  # the container name (scroll right):
   CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                              NAMES
-  f96371cc4a61        elasticsearch:latest   "/docker-entrypoint.…"   About an hour ago   Up About an hour    0.0.0.0:9200->9200/tcp, 9300/tcp   <container_name>
+  <container_id>      elasticsearch:latest   "/docker-entrypoint.…"   About an hour ago   Up About an hour    0.0.0.0:9200->9200/tcp, 9300/tcp   <container_name>
   ```
 
-- Use the container name from the output of the `docker ps` command to examine the container's logs:
+- Now that the container is running, we can start playing with it. Use the container name from the output of the `docker ps` command to examine the container's logs:
 
   ```bash
   > docker logs -f <container_name>
@@ -103,13 +102,12 @@ Elasticsearch developers build and maintain.
   # -f: (follow) show new logs as they are generated
   ```
 
-  You should eventually see in the logs that Elasticsearch has started.
-  Press `Ctrl-C` to exit the log tailing. To confirm that Elasticsearch is up, query it:
+  You should eventually see in the logs that Elasticsearch has started. Press `Ctrl-C` to exit the log tailing. To confirm that Elasticsearch is up, query it:
 
   ```bash
   > curl localhost:9200/
 
-  # You should see something along the lines of the following to confirm that 
+  # You should see something along the following lines to confirm that 
   # Elasticsearch is healthy:
   {
     "name" : "8DfH16I",
@@ -127,7 +125,95 @@ Elasticsearch developers build and maintain.
 
   > curl localhost:9200/_cat/indices?v
   health status index uuid pri rep docs.count docs.deleted store.size pri.store.size
+  # No indexes have been created
   ```
     
-- So our Elasticsearch container has no data in it, which is pretty boring. Let's seed it with some data by mounting
-  a volume
+- So our Elasticsearch container has no data in it, which is pretty boring. Let's seed it with some data by mounting a volume into the container at startup. First, we should shut down our Elasticsearch container.
+  
+  ```bash
+  # Reference the container by either name or id:
+  > docker kill <container_name/id>
+  > docker ps -a
+  
+  # -a: show all containers, not just running ones
+  
+  # The container is status 'Exited'
+  CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS                       PORTS               NAMES
+  <container_id>      elasticsearch:latest   "/docker-entrypoint.…"   10 minutes ago      Exited (137) 2 seconds ago                       <container_name>
+  ```
+  
+  Now create a new Elasticsearch instance with some seed data:
+  
+  ```bash
+  # From docker_tutorial/exercise-1/
+  > cd elasticsearch/
+  
+  # We're going to use an officially supported image this time. If you try to create a container
+  # from an image that you don't have stored locally, Docker will try to download the image first.
+  > docker run -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ -d docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+  
+  # -v: mount a file/directory into the container's file system as a volume.
+  #     The source path must be an absolute path.
+  ```
+  
+  Use the `docker logs` command to watch Elasticsearch as it initializes. When it's ready, let's query it to examine the data that we've seeded:
+  
+  ```bash
+  > curl 'localhost:9200/_cat/indices?v'
+  
+  health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+  green  open   owner TXOuE_c-QhKO8q3Xy0P1og   1   0          7            0      7.4kb          7.4kb
+  green  open   pet   PTRNI5eySsCVRFBit9GHHA   1   0          6            0      4.3kb          4.3kb
+
+  > curl 'localhost:9200/owner/_search?pretty'
+  
+  {
+    "took" : 72,
+    "timed_out" : false,
+    "_shards" : {
+      "total" : 1,
+      "successful" : 1,
+      "skipped" : 0,
+      "failed" : 0
+    },
+    "hits" : {
+      "total" : 3,
+      "max_score" : 1.0,
+      "hits" : [
+        {
+          "_index" : "owner",
+          "_type" : "doc",
+          "_id" : "YOSDkGQBd9122Iwh9_nQ",
+          "_score" : 1.0,
+          "_source" : {
+            "name" : "Bart Simpson",
+            "age" : 12
+          }
+        },
+        {
+          "_index" : "owner",
+          "_type" : "doc",
+          "_id" : "Y-SDkGQBd9122Iwh-PlB",
+          "_score" : 1.0,
+          "_source" : {
+            "name" : "Richard Tator",
+            "age" : 40
+          }
+        },
+        {
+          "_index" : "owner",
+          "_type" : "doc",
+          "_id" : "ZuSDkGQBd9122Iwh-Plc",
+          "_score" : 1.0,
+          "_source" : {
+            "name" : "My Grandma",
+            "age" : 300
+          }
+        }
+      ]
+    }
+  }
+  ```
+  
+- As we've seen, the docker commands to start containers can get pretty long, and this can get really cumbersome when working with multiple containers at once. Enter Docker Compose, a handy container orchestration tool for saving and starting container configurations.
+  
