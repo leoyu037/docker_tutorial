@@ -17,9 +17,9 @@ This tutorial assumes that you already have Docker installed and an account on
 Dockerhub per the requirements below.
 
 - [Docker](https://store.docker.com/search?offering=community&type=edition)
-    - Also available via homebrew for macOS: `brew cask install docker`
+  - Also available via homebrew for macOS: `brew cask install docker`
 - [Dockerhub Account](https://hub.docker.com/)
-    - Register for a Dockerhub account
+  - Register for a Dockerhub account
 
 First, clone this repository:
 
@@ -32,10 +32,10 @@ cd docker_tutorial/
 
 - Go to the first exercise directory:
 
-    ```bash
-    # From docker_tutorial:
-    cd exercise-1/
-    ```
+  ```bash
+  # From docker_tutorial:
+  > cd exercise-1/
+  ```
 
 Creating and sharing reusable images is a big part of the Docker philosophy, so
 we're going to start the tutorial by working with a pre-existing image that the
@@ -55,66 +55,79 @@ Elasticsearch developers build and maintain.
 
 - Let's download the latest Elasticsearch as our first image:
 
-    ```bash
-    docker pull elasticsearch    # specifying an image with no tag defaults to 'latest'
+  ```bash
+  > docker pull elasticsearch    # specifying an image with no tag defaults to 'latest'
 
-    # Or more explicitly:
-    docker pull elasticsearch:latest
-    ```
+  # Or more explicitly:
+  > docker pull elasticsearch:latest
+  ```
 
-    > Anyone can build and register public Docker images to DockerHub, but like
-    > Elasticsearch, most other technologies have official Docker images that are
-    > actively maintained. If you're thinking about using a new technology in a
-    > container, the first place to check is DockerHub.
+  > Anyone can build and register public Docker images to DockerHub, but like
+  > Elasticsearch, most other technologies have official Docker images that are
+  > actively maintained. If you're thinking about using a new technology in a
+  > container, the first place to check is DockerHub.
 
-- Examine your local images:
+- Examine our local images:
 
-    ```bash
-    docker image ls
-    ```
+  ```bash
+  > docker image ls
 
-    You should see `elasticsearch:latest` in your list of downloaded images.
+  REPOSITORY                                      TAG                 IMAGE ID            CREATED             SIZE
+  elasticsearch                                   latest              bbb1111fe3d3        9 days ago          486MB
+  ```
 
-- Start Elasticsearch and examine your running containers:
+  You should see `elasticsearch:latest` in your list of downloaded images.
 
-    ```bash
-    docker run -p 9200:9200 -d elasticsearch:latest
+- Start Elasticsearch and examine our running containers:
+
+  ```bash
+  > docker run -p 9200:9200 -d elasticsearch:latest
+
+  # -p: map local port to container port. 
+  #     Elasticsearch runs on port 9200 by default inside the container. 
+  #     We need this mapping in order to be able to access the container port locally.
+  # -d: run the container in the background.
+
+  > docker ps
+
+  # You should see your new container running w/ the port mapped, along with the container name:
+  CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                              NAMES
+  f96371cc4a61        elasticsearch:latest   "/docker-entrypoint.…"   About an hour ago   Up About an hour    0.0.0.0:9200->9200/tcp, 9300/tcp   <container_name>
+  ```
+
+- Use the container name from the output of the `docker ps` command to examine the container's logs:
+
+  ```bash
+  > docker logs -f <container_name>
+
+  # -f: (follow) show new logs as they are generated
+  ```
+
+  You should eventually see in the logs that Elasticsearch has started.
+  Press `Ctrl-C` to exit the log tailing. To confirm that Elasticsearch is up, query it:
+
+  ```bash
+  > curl localhost:9200/
+
+  # You should see something along the lines of the following to confirm that 
+  # Elasticsearch is healthy:
+  {
+    "name" : "8DfH16I",
+    "cluster_name" : "elasticsearch",
+    "cluster_uuid" : "fTN23epwSc-YZdOTkdsxDw",
+    "version" : {
+      "number" : "5.6.10",
+      "build_hash" : "b727a60",
+      "build_date" : "2018-06-06T15:48:34.860Z",
+      "build_snapshot" : false,
+      "lucene_version" : "6.6.1"
+    },
+    "tagline" : "You Know, for Search"
+  }
+
+  > curl localhost:9200/_cat/indices?v
+  health status index uuid pri rep docs.count docs.deleted store.size pri.store.size
+  ```
     
-    # -p: map local port to container port. 
-    #     Elasticsearch runs on port 9200 by default inside the container. 
-    #     We need this mapping in order to be able to access the container port locally.
-    # -d: run the container in the background.
-    
-    docker ps
-    ```
-    
-    You should see your new container running with the port mapped.
-
-- Take note of the container's name from the output of the `docker ps` command and use it to examine the container's logs:
-
-    ```bash
-    docker logs -f <container_name>
-    
-    # -f: (follow) show new logs as they are generated
-    ```
-    
-- Query Elasticsearch:
-
-    ```bash
-    > curl localhost:9200/
-    
-    # You should see something along the lines of the following to confirm that Elasticsearch is healthy:
-    {
-      "name" : "8DfH16I",
-      "cluster_name" : "elasticsearch",
-      "cluster_uuid" : "fTN23epwSc-YZdOTkdsxDw",
-      "version" : {
-        "number" : "5.6.10",
-        "build_hash" : "b727a60",
-        "build_date" : "2018-06-06T15:48:34.860Z",
-        "build_snapshot" : false,
-        "lucene_version" : "6.6.1"
-      },
-      "tagline" : "You Know, for Search"
-    }
-    ```
+- So our Elasticsearch container has no data in it, which is pretty boring. Let's seed it with some data by mounting
+  a volume
