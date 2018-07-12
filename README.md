@@ -215,7 +215,7 @@ Elasticsearch developers build and maintain.
 
 As we've seen, the docker commands to start containers can get pretty cumbersome, especially when working with multiple containers at once. Enter Docker Compose, a handy container orchestration tool for saving and starting container configurations. Running plain Docker commands is sometimes appropriate, but a most of the time it's easier to write a `docker-compose.yaml` and use Docker Compose to work with frequently used setups.
   
-- Continuing with our Elasticsearch example, we can turn our Docker command into a `docker-compose.yaml`:
+- Continuing with our Elasticsearch example, we can turn our Docker command into a `docker-compose.yaml` (which has conveniently been provided):
 
   ```bash
   # From docker_tutorial/:
