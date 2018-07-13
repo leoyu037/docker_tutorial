@@ -341,7 +341,15 @@ and use Docker Compose to work with frequently used setups.
 In the rest of this tutorial, we'll introduce most features by using plain
 Docker commands and then switch over to using Docker Compose for convenience.
 
-__TODO__: clean up images, containers, networks?
+Let's remove any leftover containers and (optionally) images before moving on
+to the next exercise:
+
+```bash
+> docker container prune
+
+# Optional, will delete all images not being used by a container
+> docker image prune --all
+```
 
 --------------------------------------------------------------------------------
 
