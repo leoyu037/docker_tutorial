@@ -13,8 +13,8 @@ end of these, exercises you should be able to:
 
 ## Requirements
 
-This tutorial assumes that you already have Docker installed and an account on
-Dockerhub per the requirements below.
+This tutorial assumes that you already have latest version of Docker installed 
+and an account on Dockerhub per the requirements below.
 
 - [Docker](https://store.docker.com/search?offering=community&type=edition)
   - Also available via homebrew for macOS: `brew cask install docker`
@@ -39,6 +39,15 @@ helpful links with more in-depth explanations of various features:
 - Docker Compose:
   - [Command line reference](https://docs.docker.com/compose/reference/)
   - [Docker Compose file reference](https://docs.docker.com/compose/compose-file/#compose-file-structure-and-examples)
+  
+And if things get hairy, here is a command to help reset your docker environment:
+
+```bash
+# Kill all containers
+docker kill `docker ps -q`
+# Remove all containers, networks, and images that aren't related to a running container
+docker system prune --all
+```
 
 --------------------------------------------------------------------------------
 
@@ -402,9 +411,31 @@ DockerHub.
   
 - Now that we have a working image, let's publish it to DockerHub. First we need
   to create a new repository for our image. Go to [DockerHub](https://hub.docker.com),
-  login, and create a new repo called `toy-flask`:
+  login, and create a new public repo called `toy-flask`:
   
+  ![New Dockerhub Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/dockerhub-create-repo-screenshot.png)
   
+  Note that the repo's full name will be `<your_username>/toy-flask`. Then login
+  to DockerHub on the command line, re-tag your image to match your repo name,
+  and push to DockerHub:
+  
+  ```bash
+  > docker login
+  > docker tag toy-flask:0.0.1 <your_username>/toy-flask:0.0.1
+  > docker images
+  
+  REPOSITORY                                      TAG                 IMAGE ID            CREATED             SIZE
+  <your_username>/toy-flask                       0.0.1               <image_id>          About an hour ago   95.2MB
+  toy-flask                                       0.0.1               <image_id>          About an hour ago   95.2MB
+  
+  > docker push <your_username>/toy-flask:0.0.1
+  ```
+  
+  Your newly uploaded tag should now appear at `https://hub.docker.com/r/<your_username>/toy-flask/tags/`.
+  
+  ![Newly Uploaded Tag](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/dockerhub-newly-uploaded-tag-screenshot.png)
+  
+- Now that we have a 
 
 --------------------------------------------------------------------------------
 
