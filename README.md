@@ -32,7 +32,12 @@ cd docker_tutorial/
 
 If case you don't understand something or get lost or stuck, here are a few helpful links with more in-depth explanations of various features:
 
-__TODO__: docker command reference, docker compose command reference
+- Docker:
+  - [Command line reference](https://docs.docker.com/engine/reference/commandline/docker/)
+  - [Dockerfile reference](https://docs.docker.com/engine/reference/builder/)
+- Docker Compose:
+  - [Command line reference](https://docs.docker.com/compose/reference/)
+  - [Docker Compose file reference](https://docs.docker.com/compose/compose-file/#compose-file-structure-and-examples)
 
 --------------------------------------------------------------------------------
 
@@ -135,6 +140,9 @@ Elasticsearch developers build and maintain.
   ```bash
   # Reference the container by either name or id:
   > docker kill <container_name/id>
+  # OR a gentler way to stop containers:
+  > docker stop <container_name/id> 
+  
   > docker ps -a
   
   # -a: show all containers, not just running ones
@@ -216,6 +224,8 @@ Elasticsearch developers build and maintain.
     }
   }
   ```
+  
+> So to recap, we now have a working instance of Elasticsearch running with seed data that can be used for development, and we didn't have to install Elasticsearch in our local development environment (yay for clean development environments!). We also have an easy way to start and stop our Elasticsearch container on demand, and we know how to seed fresh instances of our Elasticsearch with data (yay for being able to develop/test with a consistent data set! Also, seeding data into other containerized data stores usually works the same way). Awesome!
 
 ### Introducing Docker Compose
 
