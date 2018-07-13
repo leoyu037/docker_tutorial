@@ -54,33 +54,33 @@ postgres 2 ----|
 
 ### Tasks to cover
 - Dockerhub
-  - search
-  - pull
+  - DONE: search
+  - DONE: pull
   - login
   - push
   - create repo
 - Dockerfile
   - write
 - Image
-  - ls
+  - DONE: ls
   - build
   - rm
     - force
   - prune
 - Container
-  - ps
-  - run
-    - environment variables
-    - ports
-    - volumes
+  - DONE: ps
+  - DONE: run
+    - DONE: environment variables
+    - DONE: ports
+    - DONE: volumes
     - network
     - entrypoint
     - {command}
-  - logs
+  - DONE: logs
   - exec
-  - stop
+  - DONE: stop
   - restart
-  - kill
+  - DONE: kill
   - prune
 - Network
   - ls
@@ -89,13 +89,16 @@ postgres 2 ----|
   - rm
   - prune
 - Docker Compose
-  - write
+  - DONE: write
   - build
-  - run
+  - DONE: up
     - project
+  - DONE: ps
+  - run
   - exec
-  - logs
-  - kill
+  - DONE: logs
+  - DONE: stop
+  - DONE: kill
   - down
 
 --------------------------------------------------------------------------------
