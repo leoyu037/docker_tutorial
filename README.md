@@ -108,12 +108,12 @@ Elasticsearch developers build and maintain.
   # -f: (follow) show new logs as they are generated
   ```
 
-  You should eventually see in the logs that Elasticsearch has started. Press `Ctrl-C` to exit the log tailing. To confirm that Elasticsearch is up, query it:
+  We should eventually see in the logs that Elasticsearch has started. Press `Ctrl-C` to exit the log tailing. To confirm that Elasticsearch is up, query it:
 
   ```bash
   > curl localhost:9200/
 
-  # You should see something along the following lines to confirm that 
+  # We should see something along the following lines to confirm that 
   # Elasticsearch is healthy:
   {
     "name" : "8DfH16I",
@@ -225,7 +225,7 @@ Elasticsearch developers build and maintain.
   }
   ```
   
-> So to recap, we now have a working instance of Elasticsearch running with seed data that can be used for development, and we didn't have to install Elasticsearch in our local development environment (yay for clean development environments!). We also have an easy way to start and stop our Elasticsearch container on demand, and we know how to seed fresh instances of our Elasticsearch with data (yay for being able to develop/test with a consistent data set! Also, seeding data into other containerized data stores usually works the same way). Awesome!
+> So to recap, we now have a working instance of Elasticsearch running with seed data that can be used for development, and we didn't have to install Elasticsearch in our local development environment (yay for clean development environments!). We also have an easy way to start and stop our Elasticsearch container on demand, and we know how to seed fresh instances of our Elasticsearch with data (yay for being able to develop/test with a consistent data set! Also, most other data store images provide a similar way to seed data). Awesome!
 
 ### Introducing Docker Compose
 
@@ -238,9 +238,6 @@ As we've seen, the docker commands to start containers can get pretty cumbersome
   > cd exercise-1/elasticsearch/
   > cat docker-compose.yaml
   ```
-  
-  TODO: explain docker-compose.yaml
-
   ```yaml
   # docker-compose.yaml
   version: '3'
@@ -252,10 +249,18 @@ As we've seen, the docker commands to start containers can get pretty cumbersome
       ports:
         - 9200:9200
       volumes:
-        - ./data/:/usr/share/elasticsearch/data/
+        - ./data/:/usr/share/elasticsearch/data/ # The mount source can be a relative path in docker-compose
   ```
   
-- If we start our Docker Compose configuration, we'll have the same exact setup as before:
+  As we can see, our `docker-compose.yaml` defines one "service" named `elasticsearch` and specifies the image to use, an environment variable to inject, the port to map, and a volume to mount. The `elasticsearch` service configuration is essentially the YAML equivalent to the following Docker command:
+  
+  ```bash
+  docker run -e discovery.type=single-node -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+  ```
+
+  > Refer back to the [reference links](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/README.md#reference) for more documentation on Docker Compose files.
+
+- So now if we start our Docker Compose configuration, we'll have started an Elasticsearch container with the same exact setup as before:
   
   ```bash
   > docker-compose up -d
@@ -263,6 +268,32 @@ As we've seen, the docker commands to start containers can get pretty cumbersome
   # 'docker-compose.yaml/yml' is the standard name of docker-compose configurations, so we
   # don't need to explicitly pass in a filename
   # -d: start containers in the background
+  ```
+  
+  In addition to seeing our running containers with `docker ps`, we can also inspect only the containers associated with our Docker Compose configuration:
+  
+  ```bash
+  > docker-compose ps
+  
+  # Docker Compose by default generates a container name based on the service name
+  # and the directory name that the Docker Compose file is in
+              Name                           Command               State                Ports
+  ---------------------------------------------------------------------------------------------------------
+  elasticsearch_elasticsearch_1   /usr/local/bin/docker-entr ...   Up      0.0.0.0:9200->9200/tcp, 9300/tcp
+  ```
+  
+  We can also see the logs for the containers that Docker Compose starts:
+  
+  ```bash
+  > docker-compose logs
+  ```
+  
+  When you're done poking around, let's shut our container down:
+  
+  ```bash
+  > docker-compose stop
+  # OR
+  > docker-compose kill
   ```
 
 In the rest of this tutorial, we'll introduce most features by using plain Docker commands and then switch over to using Docker Compose for convenience.
