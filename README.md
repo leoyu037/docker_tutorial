@@ -48,11 +48,12 @@ Creating and sharing reusable images is a big part of the Docker philosophy, so
 we're going to start the tutorial by working with a pre-existing image that the
 Elasticsearch developers build and maintain.
 
-- Go to [DockerHub](hub.docker.com), enter 'Elasticsearch' into the search box,
-  and find the official Elasticsearch repository. You should land on [this
-  page](https://hub.docker.com/_/elasticsearch/). Here, you'll see documentation
-  for how to use the image along with a list of image tags (read: versions)
-  available for use. The `tags` tab contains a more exhaustive list of tags.
+- Go to [DockerHub](https://hub.docker.com), enter 'Elasticsearch' into the
+  search box, and find the official Elasticsearch repository. You should land on
+  [this page](https://hub.docker.com/_/elasticsearch/). Here, you'll see
+  documentation for how to use the image along with a list of image tags (read:
+  versions) available for use. The `tags` tab contains a more exhaustive list of
+  tags.
 
   (__NOTE__: you'll see that the official Elasticsearch repo has been
   deprecated because Elasticsearch has chosen to self-host its Docker
@@ -107,7 +108,8 @@ Elasticsearch developers build and maintain.
   container's logs:
 
   ```bash
-  > docker logs -f <container_name>
+  # Reference the container by either name or id:
+  > docker logs -f <container_name/id>
 
   # -f: (follow) show new logs as they are generated
   ```
@@ -330,8 +332,92 @@ and use Docker Compose to work with frequently used setups.
 In the rest of this tutorial, we'll introduce most features by using plain
 Docker commands and then switch over to using Docker Compose for convenience.
 
+__TODO__: clean up images, containers, networks?
+
 --------------------------------------------------------------------------------
 
 ## Exercise 2
 
+Now that we know how to search for, download, and run Docker images, let's try
+creating an image for a basic 'Hello World!' Flask app and publishing it to
+DockerHub.
 
+- Go to the second exercise:
+
+  ```bash
+  # From docker_tutorial/:
+  > cd exercise-2/toy-flask/
+  ```
+  
+  Here we have `app.py` defining a simple Flask server, a `setup.py` with a list
+  of requirements, and a Dockerfile to build our image:
+  
+  
+  ```bash
+  > cat Dockerfile
+  ```
+  ```Dockerfile
+  # Dockerfile
+  FROM python:3-alpine
+
+  WORKDIR /app
+
+  COPY setup.py setup.py
+  RUN python setup.py install
+
+  COPY app.py app.py
+
+  CMD flask run -h 0.0.0.0 -p 80
+  ```
+  
+  This Dockerfile specifies a base image to build off of, sets a working
+  directory, copies our source, installs some dependencies, and specifies the 
+  default command to execute when a container is created from an image built
+  from this Dockerfile.
+  
+  > All Docker images inherit from some parent image. In this case, we are basing
+  > our image off of an [official Python 3 image](https://hub.docker.com/_/python/)
+  > that was built off of an [official Alpine Linux image](https://hub.docker.com/_/alpine/).
+  > In most cases, if you click on a tag in for an official Docker repo, you
+  > should be able to view the Dockerfile that the tag was built from. 
+  >
+  > ![Official Python Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/official-python-repo-screenshot.png)
+  > ![Python 3-alpine Dockerfile](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/python-3-alpine-dockerfile-screenshot.png)
+  
+- Let's build and run the image and verify that it works:
+
+  ```bash
+  > docker build -t toy-flask:0.0.1 .
+  
+  # -t: (required) specify the image name and the tag
+  # The last arg specifies the directory of the Docker build context. All files
+  # that are added from the local filesystem at build time are relative to this
+  # directory.
+
+  > docker run -p 80:80 -d toy-flask:0.0.1
+  > curl localhost/some/path/
+  Hello World!
+  Path: some/path/
+  ```
+  
+- Now that we have a working image, let's publish it to DockerHub. First we need
+  to create a new repository for our image. Go to [DockerHub](https://hub.docker.com),
+  login, and create a new repo called `toy-flask`:
+  
+  
+
+--------------------------------------------------------------------------------
+
+## Exercise 3
+
+--------------------------------------------------------------------------------
+
+## Exercise 4
+
+--------------------------------------------------------------------------------
+
+## Conclusion
+
+## Further Reading
+
+- [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
