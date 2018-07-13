@@ -435,7 +435,12 @@ DockerHub.
   
   ![Newly Uploaded Tag](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/dockerhub-newly-uploaded-tag-screenshot.png)
   
-- Now that we have a 
+- We are now able to run our image without having it cached locally: 
+
+  ```bash
+  > docker rmi <your_username>/toy-flask:0.0.1
+  > docker run -p 80:80 -d <your_username>/toy-flask:0.0.1
+  ```
 
 --------------------------------------------------------------------------------
 
