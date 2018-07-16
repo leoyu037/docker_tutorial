@@ -153,11 +153,7 @@ Elasticsearch developers build and maintain.
     "cluster_name" : "elasticsearch",
     "cluster_uuid" : "fTN23epwSc-YZdOTkdsxDw",
     "version" : {
-      "number" : "5.6.10",
-      "build_hash" : "b727a60",
-      "build_date" : "2018-06-06T15:48:34.860Z",
-      "build_snapshot" : false,
-      "lucene_version" : "6.6.1"
+      // ...
     },
     "tagline" : "You Know, for Search"
   }
@@ -215,17 +211,9 @@ Elasticsearch developers build and maintain.
   > curl 'localhost:9200/owner/_search?pretty'
 
   {
-    "took" : 72,
-    "timed_out" : false,
-    "_shards" : {
-      "total" : 1,
-      "successful" : 1,
-      "skipped" : 0,
-      "failed" : 0
-    },
+    // ...
     "hits" : {
-      "total" : 3,
-      "max_score" : 1.0,
+      // ...
       "hits" : [
         {
           "_index" : "owner",
