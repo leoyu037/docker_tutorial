@@ -455,6 +455,8 @@ DockerHub.
   > docker rmi <your_username>/toy-flask:0.0.1
   > docker run -p 80:80 -d <your_username>/toy-flask:0.0.1
   ```
+  
+- Let's stop and remove our containers before moving on.
 
 > Cool, now we know the general structure of a Dockerfile and how to publish our
 > own images to DockerHub. As we'll see later, the contents of a Docker image are
@@ -562,8 +564,8 @@ Elasticsearch instance.
 
   # Once docker containers are in the same network, they can refer to each
   # other by container name
-  > docker run --network tutorial -p 80:80 -e ES_HOST=tut-elasticsearch:9200 \
-      -d toy-flask:local
+  > docker run --name tut-toy-flask --network tutorial -p 80:80 \
+      -e ES_HOST=tut-elasticsearch:9200 -d toy-flask:local
 
   > curl localhost/owner/bart
 
@@ -579,7 +581,7 @@ Elasticsearch instance.
   [
       {
           "Name": "tutorial",
-          "Id": "4122a0c56538fcef1b71d819d49f32524d02ba71a947a395c4781ea1bd73223e",
+          "Id": "<network_id>",
           "Created": "2018-07-16T17:18:05.1557905Z",
           "Scope": "local",
           "Driver": "bridge",
@@ -602,15 +604,15 @@ Elasticsearch instance.
           },
           "ConfigOnly": false,
           "Containers": {
-              "bf1f3a75f92ec8edaa11dfdb4d0e7391880ecbe1fc00ac3097228af3c37ee54b": {
+              "<container_id>": {
                   "Name": "tut-elasticsearch",
                   "EndpointID": "bebd5c6d7b3319565fca4c992354ff949de4d9420da9c3c3c17a1cd6bb7f2b6a",
                   "MacAddress": "02:42:ac:12:00:02",
                   "IPv4Address": "172.18.0.2/16",
                   "IPv6Address": ""
               },
-              "fde0b1a5a16d414d397c7273f695555f4a18e9d41eec6831996f0cc1c5fc2884": {
-                  "Name": "elated_northcutt",
+              "<container_id>": {
+                  "Name": "tut-toy-flask",
                   "EndpointID": "021a86774597af208ed7b153ec1d9ce88ae174ebdbeae0121db2bcbaee815242",
                   "MacAddress": "02:42:ac:12:00:03",
                   "IPv4Address": "172.18.0.3/16",
@@ -622,9 +624,96 @@ Elasticsearch instance.
       }
   ]
   ```
+  
+  Here we can see that our network has its own subnet and that our two containers
+  each have an address in the subnet. Containers can refer to each other by local
+  IP, but some Docker networking magic allows us the flexibility of having our
+  containers reference each other by name.
+  
+- Our Docker commands are starting to get really hairy. Let's turn our commands
+  into Docker Compose configurations instead. First, we should clean up our
+  containers and network:
 
-
-
+  ```bash
+  > docker kill tut-elasticsearch tut-toy-flask
+  > docker container prune
+  > docker network rm tutorial
+  ```
+  
+  Let's take a look at the Docker Compose configuration for our toy Flask:
+  
+  ```bash
+  # From docker_tutorial/exercise-3/:
+  > cat toy-flask/docker-compose.yaml
+  ```
+  ```yaml
+  # docker-compose.yaml
+  version: '3'
+  services:
+    toy-flask-1:
+      build: .
+      image: toy-flask:local
+      environment:
+        ES_HOST: elasticsearch:9200
+    toy-flask-2:
+      image: toy-flask:local
+      environment:
+        ES_HOST: elasticsearch:9200
+    toy-flask-3:
+      image: toy-flask:local
+      environment:
+        ES_HOST: elasticsearch:9200
+    nginx:
+      image: nginx
+      ports:
+        - 80:80
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf
+  ```
+  
+  So we've specified three replicas of our toy Flask app and we've put them
+  behind an Nginx configured as a load balancer (just for fun). Each toy Flask
+  is configured to point to `elasticsearch`, which is the service name that we
+  defined in the other Docker Compose config in [Exercise 1](#introducing-docker-compose).
+  When using Docker Compose, you can also refer to containers by service name.
+  
+  > There is sometimes a better way to scale services with Docker Compose, see
+  > [`docker-compose scale`](https://docs.docker.com/compose/reference/scale/).
+  
+  With four services defined in one configuration, it's easy to see how starting
+  the containers with Docker Compose will be much easier than starting them with
+  plain Docker commands.
+  
+- Let's try running this new setup with our two Docker Compose configurations.
+  By default, Docker Compose creates a network for the containers that it starts
+  for us. However this means that by default, containers started by separate 
+  Docker Compose configurations won't be able to communicate with each other.
+  
+  While not an explicit feature, specifying the 'project name' of a Docker
+  Compose session will result in a network with the same name being created if
+  it doesn't already exist. We can leverage this behavior to connect containers
+  from different Docker Compose setups to the same network (there are other ways
+  to do this, but this way is the most streamlined):
+  
+  ```bash
+  # From docker_tutorial/exercise-3/
+  > cd elasticsearch
+  > docker-compose -p tutorial up -d
+  
+  # -p: specify project name, which also specifies the network name; the same 
+  #     can also be done by setting the COMPOSE_PROJECT_NAME env var
+  
+  > cd ../toy-flask
+  > docker-compose -p tutorial up -d
+  ```
+  
+  __TODO__: docker-compose logs, observe load balancing, inspect network
+  
+  > __TODO__: We reused the Docker Compose configuration from the first exercise. 
+  > This gives you the flexibility to either spin up logical parts of a large
+  > application stack or to spin up all of it without duplicating or
+  > rewriting Docker Compose configuration, which is incredibly convenient.
+  
 --------------------------------------------------------------------------------
 
 ## Exercise 4
