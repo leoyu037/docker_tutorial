@@ -1,13 +1,3 @@
-# from flask import Flask
-# import requests
-#
-# app = Flask(__name__)
-#
-#
-# @app.route('/', defaults={'path': ''})
-# @app.route('/<path:path>')
-# def hello(path):
-#     return "Hello World!\nPath: {}".format(path)
 import os
 
 from flask import Flask, jsonify

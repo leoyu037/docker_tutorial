@@ -10,7 +10,7 @@ This is a barebones flask setup. Includes:
 ## Requirements
 
 1. Docker
-1. Docker Compose (preinstalled w/ DOcker for Mac)
+1. Docker Compose (preinstalled w/ Docker for Mac)
 
 ## Starting the application
 

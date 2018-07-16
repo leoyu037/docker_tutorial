@@ -19,12 +19,25 @@ around and help people debug.
   - Take toy flask source, write a Dockerfile, build an image, create a repo,
     push
   - Delete image locally, run
+1. Connect to elasticsearch and scale toy flask
   - Add endpoint to app to query documents from ES, rebuild, run w/
     elasticsearch, inspect/query
-1. Scale toy flask
   - Connect a second toy-flask instance to ES
   - Reverse proxy w/ nginx
   - Do it w/ docker-compose
+
+add endpoint
+create network
+list network
+run flask and elasticsearch together
+inspect network
+remove containers
+remove network
+
+write docker-compose
+connect to elasticsearch docker-compose
+observe load balancing
+
 1. Toy celery
   - Run w/ docker-compose, inspect
   - Add tasks to index from the 2 postgres to ES, rebuild, add postgres w/ seed
@@ -43,9 +56,9 @@ postgres 2 ----|
 
 ### Workflows to cover
 
-- Create a new repo
+- DONE: Create a new repo
   - Write > build > create repo > push
-- Run a data store/tool/service locally
+- DONE: Run a data store/tool/service locally
   - Search > pull > run > debug > stop/kill
 - Local development
   - Build > run > debug > change code > rebuild > run
@@ -56,37 +69,38 @@ postgres 2 ----|
 - Dockerhub
   - DONE: search
   - DONE: pull
-  - login
-  - push
-  - create repo
+  - DONE: login
+  - DONE: push
+  - DONE: create repo
 - Dockerfile
-  - write
+  - DONE: write
 - Image
   - DONE: ls
-  - build
-  - rm
+  - DONE: build
+  - DONE: tag
+  - DONE: rm
     - force
-  - prune
+  - DONE: prune
 - Container
   - DONE: ps
   - DONE: run
     - DONE: environment variables
     - DONE: ports
     - DONE: volumes
-    - network
+    - TODO: network
     - entrypoint
-    - {command}
+    - {command} - introduce a bug to debug
   - DONE: logs
   - exec
   - DONE: stop
   - restart
   - DONE: kill
-  - prune
+  - DONE: prune
 - Network
-  - ls
-  - create
-  - inspect
-  - rm
+  - TODO: ls
+  - TODO: create
+  - TODO: inspect
+  - TODO: rm
   - prune
 - Docker Compose
   - DONE: write
