@@ -594,27 +594,9 @@ Elasticsearch instance.
       {
           "Name": "tutorial",
           "Id": "<network_id>",
-          "Created": "2018-07-16T17:18:05.1557905Z",
-          "Scope": "local",
-          "Driver": "bridge",
-          "EnableIPv6": false,
-          "IPAM": {
-              "Driver": "default",
-              "Options": {},
-              "Config": [
-                  {
-                      "Subnet": "172.18.0.0/16",
-                      "Gateway": "172.18.0.1"
-                  }
-              ]
-          },
-          "Internal": false,
-          "Attachable": false,
-          "Ingress": false,
-          "ConfigFrom": {
-              "Network": ""
-          },
-          "ConfigOnly": false,
+
+          // ...
+          
           "Containers": {
               "<container_id>": {
                   "Name": "tut-elasticsearch",
@@ -631,8 +613,8 @@ Elasticsearch instance.
                   "IPv6Address": ""
               }
           },
-          "Options": {},
-          "Labels": {}
+          
+          // ...
       }
   ]
   ```
@@ -737,27 +719,9 @@ Elasticsearch instance.
       {
           "Name": "tutorial_default",
           "Id": "<network_id>",
-          "Created": "2018-07-16T19:50:32.7605362Z",
-          "Scope": "local",
-          "Driver": "bridge",
-          "EnableIPv6": false,
-          "IPAM": {
-              "Driver": "default",
-              "Options": null,
-              "Config": [
-                  {
-                      "Subnet": "172.20.0.0/16",
-                      "Gateway": "172.20.0.1"
-                  }
-              ]
-          },
-          "Internal": false,
-          "Attachable": true,
-          "Ingress": false,
-          "ConfigFrom": {
-              "Network": ""
-          },
-          "ConfigOnly": false,
+          
+          // ...
+          
           "Containers": {
               "<container_id>": {
                   "Name": "tutorial_toy-flask-2_1",
@@ -795,7 +759,9 @@ Elasticsearch instance.
                   "IPv6Address": ""
               }
           },
-          "Options": {},
+          
+          // ...
+          
           "Labels": {
               "com.docker.compose.network": "default",
               "com.docker.compose.project": "tutorial",
