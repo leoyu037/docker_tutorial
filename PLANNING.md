@@ -87,7 +87,7 @@ postgres 2 ----|
     - DONE: environment variables
     - DONE: ports
     - DONE: volumes
-    - TODO: network
+    - DONE: network
     - entrypoint
     - {command} - introduce a bug to debug
   - DONE: logs
@@ -97,8 +97,8 @@ postgres 2 ----|
   - DONE: kill
   - DONE: prune
 - Network
-  - TODO: ls
-  - TODO: create
+  - DONE: ls
+  - DONE: create
   - TODO: inspect
   - TODO: rm
   - prune

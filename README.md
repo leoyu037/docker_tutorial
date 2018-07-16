@@ -13,16 +13,17 @@ end of these, exercises you should be able to:
 
 ## Requirements
 
-This tutorial assumes that you already have latest version of Docker installed 
+This tutorial assumes that you already have latest version of Docker installed
 and an account on Dockerhub per the requirements below:
 
 - [Docker](https://store.docker.com/search?offering=community&type=edition)
   - Also available via homebrew for macOS: `brew cask install docker`
 - [Dockerhub Account](https://hub.docker.com/)
   - Register for a Dockerhub account
-  
-No prior knowledge of Docker is required for this tutorial, but see [here](https://docs.docker.com/engine/docker-overview/)
-for an overview of the general concepts if you are interested.
+
+No prior knowledge of Docker is required for this tutorial, but see
+[here](https://docs.docker.com/engine/docker-overview/) for an overview of the
+general concepts if you are interested.
 
 First, clone this repository:
 
@@ -42,7 +43,7 @@ helpful links with more in-depth explanations of various features:
 - Docker Compose:
   - [Command line reference](https://docs.docker.com/compose/reference/)
   - [Docker Compose file reference](https://docs.docker.com/compose/compose-file/#compose-file-structure-and-examples)
-  
+
 And if things get hairy, here is a command to help reset your docker environment:
 
 ```bash
@@ -249,6 +250,8 @@ Elasticsearch developers build and maintain.
   }
   ```
 
+- Kill (or stop) the container when you are done.
+
 > So to recap, we now have a working instance of Elasticsearch running with seed
 > data that can be used for development, and we didn't have to install
 > Elasticsearch in our local development environment (yay for clean development
@@ -264,7 +267,7 @@ As we've seen, the docker commands to start containers can get pretty
 cumbersome, especially when working with multiple containers at once. Enter
 Docker Compose, a handy container orchestration tool for saving and starting
 container configurations. Running plain Docker commands is sometimes
-appropriate, but a most of the time it's easier to write a `docker-compose.yaml`
+appropriate, but most of the time it's easier to write a `docker-compose.yaml`
 and use Docker Compose to work with frequently used setups.
 
 - Continuing with our Elasticsearch example, we can turn our Docker command into
@@ -368,11 +371,11 @@ DockerHub.
   # From docker_tutorial/:
   > cd exercise-2/toy-flask/
   ```
-  
+
   Here we have `app.py` defining a simple Flask server, a `setup.py` with a list
   of requirements, and a Dockerfile to build our image:
-  
-  
+
+
   ```bash
   > cat Dockerfile
   ```
@@ -389,26 +392,26 @@ DockerHub.
 
   CMD flask run -h 0.0.0.0 -p 80
   ```
-  
+
   This Dockerfile specifies a base image to build off of, sets a working
-  directory, copies our source, installs some dependencies, and specifies the 
+  directory, copies our source, installs some dependencies, and specifies the
   default command to execute when a container is created from an image built
   from this Dockerfile.
-  
+
   > All Docker images inherit from some parent image. In this case, we are basing
   > our image off of an [official Python 3 image](https://hub.docker.com/_/python/)
   > that was built off of an [official Alpine Linux image](https://hub.docker.com/_/alpine/).
   > In most cases, if you click on a tag in for an official Docker repo, you
-  > should be able to view the Dockerfile that the tag was built from. 
+  > should be able to view the Dockerfile that the tag was built from.
   >
   > ![Official Python Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/official-python-repo-screenshot.png)
   > ![Python 3-alpine Dockerfile](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/python-3-alpine-dockerfile-screenshot.png)
-  
+
 - Let's build and run the image and verify that it works:
 
   ```bash
   > docker build -t toy-flask:0.0.1 .
-  
+
   # -t: (required) specify the image name and the tag
   # The last arg specifies the directory of the Docker build context. All files
   # that are added from the local filesystem at build time are relative to this
@@ -419,44 +422,44 @@ DockerHub.
   Hello World!
   Path: some/path/
   ```
-  
+
 - Now that we have a working image, let's publish it to DockerHub. First we need
   to create a new repository for our image. Go to [DockerHub](https://hub.docker.com),
   login, and create a new public repo called `toy-flask`:
-  
+
   ![New Dockerhub Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/dockerhub-create-repo-screenshot.png)
-  
+
   Note that the repo's full name will be `<your_username>/toy-flask`. Then login
   to DockerHub on the command line, re-tag your image to match your repo name,
   and push to DockerHub:
-  
+
   ```bash
   > docker login
   > docker tag toy-flask:0.0.1 <your_username>/toy-flask:0.0.1
   > docker images
-  
+
   REPOSITORY                                      TAG                 IMAGE ID            CREATED             SIZE
   <your_username>/toy-flask                       0.0.1               <image_id>          About an hour ago   95.2MB
   toy-flask                                       0.0.1               <image_id>          About an hour ago   95.2MB
-  
+
   > docker push <your_username>/toy-flask:0.0.1
   ```
-  
+
   Your newly uploaded tag should now appear at `https://hub.docker.com/r/<your_username>/toy-flask/tags/`.
-  
+
   ![Newly Uploaded Tag](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/dockerhub-newly-uploaded-tag-screenshot.png)
-  
-- We are now able to run our image without having it cached locally: 
+
+- We are now able to run our image without having it cached locally:
 
   ```bash
   > docker rmi <your_username>/toy-flask:0.0.1
   > docker run -p 80:80 -d <your_username>/toy-flask:0.0.1
   ```
-  
+
 > Cool, now we know the general structure of a Dockerfile and how to publish our
 > own images to DockerHub. As we'll see later, the contents of a Docker image are
-> fully transparent, so be very careful not to build sensitive information like
-> keys and passwords into an image.
+> fully transparent, so be very careful not to build sensitive information (e.g.
+> keys and passwords) into an image.
 
 --------------------------------------------------------------------------------
 
@@ -464,6 +467,163 @@ DockerHub.
 
 Let's make our Flask app more useful and give it some endpoints to query our
 Elasticsearch instance.
+
+- Go to the third exercise and check out the new endpoints:
+
+  ```bash
+  # From docker_tutorial/:
+  > cd exercise-3/
+  > cat toy-flask/app.py
+  ```
+  ```python
+  # app.py
+  # ...
+
+  ES_HOST = os.environ['ES_HOST']
+
+  # ...
+
+  def _get_owner(owner_name):
+      res = requests.get(f'http://{ES_HOST}/owner/_search?q=name:"{owner_name}"')
+      first_entry = res.json()['hits']['hits'][0]
+      owner = first_entry['_source']
+      owner['id'] = first_entry['_id']
+      return owner
+
+
+  @app.route('/owner/<owner_name>')
+  def get_owner(owner_name):
+      try:
+          return jsonify(_get_owner(owner_name))
+      except KeyError:
+          return f'Owner "{owner_name}" not found.', 404
+
+
+  @app.route('/owner/<owner_name>/pets')
+  def get_pets(owner_name):
+      try:
+          owner = _get_owner(owner_name)
+          owner_id = owner['id']
+      except KeyError:
+          return f'Owner "{owner_name}" not found.', 404
+
+      res = requests.get(f'http://{ES_HOST}/pet/_search?q=owner_id:"{owner_id}"')
+      entries = res.json()['hits']['hits']
+      pets = [entry['_source'] for entry in entries]
+      for pet, entry in zip(pets, entries):
+          pet['id'] = entry['_id']
+
+      return jsonify(pets)
+
+  # ...
+  ```
+
+  We've added a simple route to retrieve an owner by name (this is obviously a
+  weird way to use a search engine, but just go with it) and another route to
+  retrieve an owner's pets. We've also configured our app to read the
+  Elasticsearch host from the environment variable `ES_HOST`.
+
+  Let's rebuild our container:
+
+  ```bash
+  # From docker_tutorial/exercise-3/:
+  > docker build -f toy-flask/Dockerfile -t toy-flask:0.0.2 toy-flask/
+
+  # -f: specify the path of the Dockerfile
+  ```
+
+- In order for containers to communicate with each other, they must be in the
+  same Docker network:
+
+  ```bash
+  > docker network create tutorial
+  > docker network ls
+
+  # Networks 'bridge', 'host', and 'none' are special networks - you can read
+  # about them in the Docker docs
+  NETWORK ID          NAME                DRIVER              SCOPE
+  xxxxxxxxxxxx        bridge              bridge              local
+  xxxxxxxxxxxx        host                host                local
+  xxxxxxxxxxxx        none                null                local
+  <network_id>        tutorial            bridge              local
+  ```
+
+  Now that we've created a network called `tutorial`, let's start our
+  Elasticsearch and toy Flask containers in our new network:
+
+  ```bash
+  # From docker_tutorial/exercise-3/:
+  > docker run --name tut-elasticsearch --network tutorial -p 9200:9200 \
+      -v `pwd`/elasticsearch/data/:/usr/share/elasticsearch/data/ \
+      -d docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+
+  # --name: give the container a custom name
+  # --network: connect the container to a network
+
+  # Once docker containers are in the same network, they can refer to each
+  # other by container name
+  > docker run --network tutorial -p 80:80 -e ES_HOST=tut-elasticsearch:9200 \
+      -d toy-flask:local
+
+  > curl localhost/owner/bart
+
+  {"age":12,"id":"YOSDkGQBd9122Iwh9_nQ","name":"Bart Simpson"}
+  ```
+  
+  Great, our Flask container is able to talk to our Elasticsearch container.
+  Let's take a closer look at the state of the network that we've created:
+
+  ```bash
+  > docker network inspect tutorial
+
+  [
+      {
+          "Name": "tutorial",
+          "Id": "4122a0c56538fcef1b71d819d49f32524d02ba71a947a395c4781ea1bd73223e",
+          "Created": "2018-07-16T17:18:05.1557905Z",
+          "Scope": "local",
+          "Driver": "bridge",
+          "EnableIPv6": false,
+          "IPAM": {
+              "Driver": "default",
+              "Options": {},
+              "Config": [
+                  {
+                      "Subnet": "172.18.0.0/16",
+                      "Gateway": "172.18.0.1"
+                  }
+              ]
+          },
+          "Internal": false,
+          "Attachable": false,
+          "Ingress": false,
+          "ConfigFrom": {
+              "Network": ""
+          },
+          "ConfigOnly": false,
+          "Containers": {
+              "bf1f3a75f92ec8edaa11dfdb4d0e7391880ecbe1fc00ac3097228af3c37ee54b": {
+                  "Name": "tut-elasticsearch",
+                  "EndpointID": "bebd5c6d7b3319565fca4c992354ff949de4d9420da9c3c3c17a1cd6bb7f2b6a",
+                  "MacAddress": "02:42:ac:12:00:02",
+                  "IPv4Address": "172.18.0.2/16",
+                  "IPv6Address": ""
+              },
+              "fde0b1a5a16d414d397c7273f695555f4a18e9d41eec6831996f0cc1c5fc2884": {
+                  "Name": "elated_northcutt",
+                  "EndpointID": "021a86774597af208ed7b153ec1d9ce88ae174ebdbeae0121db2bcbaee815242",
+                  "MacAddress": "02:42:ac:12:00:03",
+                  "IPv4Address": "172.18.0.3/16",
+                  "IPv6Address": ""
+              }
+          },
+          "Options": {},
+          "Labels": {}
+      }
+  ]
+  ```
+
+
 
 --------------------------------------------------------------------------------
 
@@ -474,7 +634,7 @@ Elasticsearch instance.
 ## Conclusion
 
 There are quite a few Docker and Docker Compose commands that weren't covered
-here, but 
+here, but
 
 ## Further Reading
 
