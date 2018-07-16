@@ -811,14 +811,14 @@ Elasticsearch instance.
   #                   the Elasticsearch container)
   ```
 
-  > So what have we done so far? We've learned how to connect containers together
-  > with Docker networking and we've put a bunch of them together into a basic
-  > application stack with load balancing. On top of that, we're now able to do
-  > it easily and consistently with a couple of reusable configuration files and
-  > short commands. That we were able to reuse the Docker Compose configuration
-  > from the first exercise shows that we have the flexibility to both work with 
-  > parts of a stack and its entirety without rewriting config--that's incredibly
-  > convenient!
+> So what have we done so far? We've learned how to connect containers together
+> with Docker networking, and we've put a bunch of them together into a basic
+> application stack with load balancing. On top of that, we're now able to do
+> it easily and consistently with a couple of reusable configuration files and
+> short commands. That we were able to reuse the Docker Compose configuration
+> from the first exercise shows that we have the flexibility to both work with 
+> parts of a stack and its entirety without rewriting config--that's incredibly
+> convenient!
 
 --------------------------------------------------------------------------------
 
@@ -836,7 +836,14 @@ __TODO__
 
 ## Conclusion
 
-__TODO__: There are quite a few Docker and Docker Compose commands that weren't covered
+__TODO__: 
+
+That we can tear down and bring up the entire stack to a known base state makes
+application development and testing easier.
+
+Portable, clean
+
+There are quite a few Docker and Docker Compose commands that weren't covered
 here, but
 
 ## Further Reading
