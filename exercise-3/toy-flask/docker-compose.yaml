@@ -5,20 +5,14 @@ services:
     image: toy-flask:local
     environment:
       ES_HOST: elasticsearch:9200
-    volumes:
-      - ./app.py:/app/app.py
   toy-flask-2:
     image: toy-flask:local
     environment:
       ES_HOST: elasticsearch:9200
-    volumes:
-      - ./app.py:/app/app.py
   toy-flask-3:
     image: toy-flask:local
     environment:
       ES_HOST: elasticsearch:9200
-    volumes:
-      - ./app.py:/app/app.py
   nginx:
     image: nginx
     ports:

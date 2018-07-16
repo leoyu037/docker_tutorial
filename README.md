@@ -467,7 +467,7 @@ DockerHub.
   > docker rmi <your_username>/toy-flask:0.0.1
   > docker run -p 80:80 -d <your_username>/toy-flask:0.0.1
   ```
-  
+
 - Let's stop and remove our containers before moving on.
 
 > Cool, now we know the general structure of a Dockerfile and how to publish our
@@ -583,7 +583,7 @@ Elasticsearch instance.
 
   {"age":12,"id":"YOSDkGQBd9122Iwh9_nQ","name":"Bart Simpson"}
   ```
-  
+
   Great, our Flask container is able to talk to our Elasticsearch container.
   Let's take a closer look at the state of the network that we've created:
 
@@ -636,12 +636,12 @@ Elasticsearch instance.
       }
   ]
   ```
-  
+
   Here we can see that our network has its own subnet and that our two containers
   each have an address in the subnet. Containers can refer to each other by local
   IP, but some Docker networking magic allows us the flexibility of having our
   containers reference each other by name.
-  
+
 - Our Docker commands are starting to get really hairy. Let's turn our commands
   into Docker Compose configurations instead. First, we should clean up our
   containers and network:
@@ -651,9 +651,9 @@ Elasticsearch instance.
   > docker container prune
   > docker network rm tutorial
   ```
-  
+
   Let's take a look at the Docker Compose configuration for our toy Flask:
-  
+
   ```bash
   # From docker_tutorial/exercise-3/:
   > cat toy-flask/docker-compose.yaml
@@ -682,50 +682,136 @@ Elasticsearch instance.
       volumes:
         - ./nginx.conf:/etc/nginx/nginx.conf
   ```
-  
+
   So we've specified three replicas of our toy Flask app and we've put them
   behind an Nginx configured as a load balancer (just for fun). Each toy Flask
   is configured to point to `elasticsearch`, which is the service name that we
   defined in the other Docker Compose config in [Exercise 1](#introducing-docker-compose).
   When using Docker Compose, you can also refer to containers by service name.
-  
+
   > There is sometimes a better way to scale services with Docker Compose, see
   > [`docker-compose scale`](https://docs.docker.com/compose/reference/scale/).
-  
+
   With four services defined in one configuration, it's easy to see how starting
   the containers with Docker Compose will be much easier than starting them with
   plain Docker commands.
-  
+
 - Let's try running this new setup with our two Docker Compose configurations.
   By default, Docker Compose creates a network for the containers that it starts
-  for us. However this means that by default, containers started by separate 
+  for us. However this means that by default, containers started by separate
   Docker Compose configurations won't be able to communicate with each other.
-  
+
   While not an explicit feature, specifying the 'project name' of a Docker
   Compose session will result in a network with the same name being created if
   it doesn't already exist. We can leverage this behavior to connect containers
   from different Docker Compose setups to the same network (there are other ways
   to do this, but this way is the most streamlined):
-  
+
   ```bash
   # From docker_tutorial/exercise-3/
   > cd elasticsearch
   > docker-compose -p tutorial up -d
-  
-  # -p: specify project name, which also specifies the network name; the same 
+
+  # -p: specify project name, which also specifies the network name; the same
   #     can also be done by setting the COMPOSE_PROJECT_NAME env var
-  
+
   > cd ../toy-flask
   > docker-compose -p tutorial up -d
   ```
-  
+
+  If we inspect the network that was created, we'll see all five containers
+  there:
+
+  ```bash
+  > docker network ls
+
+  NETWORK ID          NAME                DRIVER              SCOPE
+  xxxxxxxxxxxx        bridge              bridge              local
+  xxxxxxxxxxxx        host                host                local
+  xxxxxxxxxxxx        none                null                local
+  <network_id>        tutorial_default    bridge              local
+
+  > docker network inspect tutorial_default
+
+  [
+      {
+          "Name": "tutorial_default",
+          "Id": "<network_id>",
+          "Created": "2018-07-16T19:50:32.7605362Z",
+          "Scope": "local",
+          "Driver": "bridge",
+          "EnableIPv6": false,
+          "IPAM": {
+              "Driver": "default",
+              "Options": null,
+              "Config": [
+                  {
+                      "Subnet": "172.20.0.0/16",
+                      "Gateway": "172.20.0.1"
+                  }
+              ]
+          },
+          "Internal": false,
+          "Attachable": true,
+          "Ingress": false,
+          "ConfigFrom": {
+              "Network": ""
+          },
+          "ConfigOnly": false,
+          "Containers": {
+              "<container_id>": {
+                  "Name": "tutorial_toy-flask-2_1",
+                  "EndpointID": "7c4fe70c3dd0f1592c9bad2e910861cb999bad77143add46dd0fcd6b567162c4",
+                  "MacAddress": "02:42:ac:14:00:05",
+                  "IPv4Address": "172.20.0.5/16",
+                  "IPv6Address": ""
+              },
+              "<container_id>": {
+                  "Name": "tutorial_elasticsearch_1",
+                  "EndpointID": "5bae1ec0d14c1e6d7a7bdb15948ad8ef2d5a604858b8b85b9c4ee53575644770",
+                  "MacAddress": "02:42:ac:14:00:02",
+                  "IPv4Address": "172.20.0.2/16",
+                  "IPv6Address": ""
+              },
+              "<container_id>": {
+                  "Name": "tutorial_toy-flask-3_1",
+                  "EndpointID": "292423e4192128bbe42ba94b95531496454b6e4681e61ce6168f2b0ee0a70d0b",
+                  "MacAddress": "02:42:ac:14:00:03",
+                  "IPv4Address": "172.20.0.3/16",
+                  "IPv6Address": ""
+              },
+              "<container_id>": {
+                  "Name": "tutorial_toy-flask-1_1",
+                  "EndpointID": "871805d71dc1e233c9fc5d7463f1f4ff642eb02c2191621d5d1b6a76a55a41c4",
+                  "MacAddress": "02:42:ac:14:00:06",
+                  "IPv4Address": "172.20.0.6/16",
+                  "IPv6Address": ""
+              },
+              "<container_id>": {
+                  "Name": "tutorial_nginx_1",
+                  "EndpointID": "9d7103d6cec384f7a272a3265ab146cb2798ed1250fb9361b665e1c4cdfb05a6",
+                  "MacAddress": "02:42:ac:14:00:04",
+                  "IPv4Address": "172.20.0.4/16",
+                  "IPv6Address": ""
+              }
+          },
+          "Options": {},
+          "Labels": {
+              "com.docker.compose.network": "default",
+              "com.docker.compose.project": "tutorial",
+              "com.docker.compose.version": "1.21.1"
+          }
+      }
+  ]
+  ```
+
   __TODO__: docker-compose logs, observe load balancing, inspect network
-  
-  > __TODO__: We reused the Docker Compose configuration from the first exercise. 
+
+  > __TODO__: We reused the Docker Compose configuration from the first exercise.
   > This gives you the flexibility to either spin up logical parts of a large
   > application stack or to spin up all of it without duplicating or
   > rewriting Docker Compose configuration, which is incredibly convenient.
-  
+
 --------------------------------------------------------------------------------
 
 ## Exercise 4

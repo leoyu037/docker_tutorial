@@ -22,22 +22,18 @@ around and help people debug.
 1. Connect to elasticsearch and scale toy flask
   - Add endpoint to app to query documents from ES, rebuild, run w/
     elasticsearch, inspect/query
-  - Connect a second toy-flask instance to ES
-  - Reverse proxy w/ nginx
-  - Do it w/ docker-compose
-
-add endpoint
-create network
-list network
-run flask and elasticsearch together
-inspect network
-remove containers
-remove network
-
-write docker-compose
-connect to elasticsearch docker-compose
-observe load balancing
-
+  - Connect a toy-flask instance to ES
+    - add endpoint
+    - create network
+    - list network
+    - run flask and elasticsearch together
+    - inspect network
+    - remove containers
+    - remove network
+  - Do it w/ docker-compose and reverse proxy w/ nginx
+    - write docker-compose
+    - connect to elasticsearch docker-compose
+    - observe load balancing
 1. Toy celery
   - Run w/ docker-compose, inspect
   - Add tasks to index from the 2 postgres to ES, rebuild, add postgres w/ seed
@@ -99,8 +95,8 @@ postgres 2 ----|
 - Network
   - DONE: ls
   - DONE: create
-  - TODO: inspect
-  - TODO: rm
+  - DONE: inspect
+  - DONE: rm
   - prune
 - Docker Compose
   - DONE: write
