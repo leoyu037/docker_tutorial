@@ -13,16 +13,15 @@ end of these, exercises you should be able to:
 
 ## Table of Contents
 
-- [Requirements](#requirements)
-- [Reference](#reference)
-- Exercises
-  - [Exercise 1](#exercise-1)
-  - [Exercise 2](#exercise-2)
-  - [Exercise 3](#exercise-3)
-  - [Exercise 4](#exercise-4)
-  - [Exercise 5](#exercise-5)
-- [Conclusion](#conclusion)
-- [Further Reading](#further-reading)
+1. [Requirements](#requirements)
+1. [Reference](#reference)
+1. [Exercise 1](#exercise-1)
+1. [Exercise 2](#exercise-2)
+1. [Exercise 3](#exercise-3)
+1. [Exercise 4](#exercise-4)
+1. [Exercise 5](#exercise-5)
+1. [Conclusion](#conclusion)
+1. [Further Reading](#further-reading)
 
 ## Requirements
 
@@ -731,11 +730,19 @@ Elasticsearch instance.
 
 ## Exercise 4
 
+__TODO__
+
+--------------------------------------------------------------------------------
+
+## Exercise 5
+
+__TODO__
+
 --------------------------------------------------------------------------------
 
 ## Conclusion
 
-There are quite a few Docker and Docker Compose commands that weren't covered
+__TODO__: There are quite a few Docker and Docker Compose commands that weren't covered
 here, but
 
 ## Further Reading
