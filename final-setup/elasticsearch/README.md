@@ -7,5 +7,6 @@ container.
 To start the Elasticsearch container:
 
 ```bash
+export COMPOSE_PROJECT_NAME=tutorial
 docker-compose up
 ```
