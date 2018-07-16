@@ -771,12 +771,54 @@ Elasticsearch instance.
   ]
   ```
 
-  __TODO__: docker-compose logs, observe load balancing, inspect network
+  Let's see our Nginx container doing round-robin-style load balancing as we
+  give it queries:
+  
+  ```bash
+  # From docker_tutorial/exercise-3/toy-flask/:
+  > curl localhost
+  
+  Hello World!
+  
+  > curl localhost/owner/grandma
+  
+  {"age":300,"id":"ZuSDkGQBd9122Iwh-Plc","name":"My Grandma"}
+  
+  > curl localhost/owner/grandma/pets
+  
+  [{"breed":"orange tabby","id":"Z-SDkGQBd9122Iwh-Pli","name":"Garfield","owner_id":"ZuSDkGQBd9122Iwh-Plc","species":"cat"},{"breed":"beagle","id":"aOSDkGQBd9122Iwh-Plp","name":"Odie","owner_id":"ZuSDkGQBd9122Iwh-Plc","species":"dog"}]
 
-  > __TODO__: We reused the Docker Compose configuration from the first exercise.
-  > This gives you the flexibility to either spin up logical parts of a large
-  > application stack or to spin up all of it without duplicating or
-  > rewriting Docker Compose configuration, which is incredibly convenient.
+  > docker-compose -p tutorial logs 
+  
+  # ...
+  toy-flask-1_1  | 172.20.0.4 - - [16/Jul/2018 20:39:11] "GET / HTTP/1.0" 200 -
+  nginx_1        | 172.20.0.1 - - [16/Jul/2018:20:39:11 +0000] "GET / HTTP/1.1" 200 12 "-" "curl/7.54.0"
+  toy-flask-2_1  | 172.20.0.4 - - [16/Jul/2018 20:40:23] "GET /owner/grandma HTTP/1.0" 200 -
+  nginx_1        | 172.20.0.1 - - [16/Jul/2018:20:40:23 +0000] "GET /owner/grandma HTTP/1.1" 200 60 "-" "curl/7.54.0"
+  toy-flask-3_1  | 172.20.0.4 - - [16/Jul/2018 20:41:06] "GET /owner/grandma/pets HTTP/1.0" 200 -
+  nginx_1        | 172.20.0.1 - - [16/Jul/2018:20:41:06 +0000] "GET /owner/grandma/pets HTTP/1.1" 200 234 "-" "curl/7.54.0"
+  ```
+  
+- Let's stop and remove the containers and networks that were created by Docker
+  Compose:
+
+  ```bash
+  # From docker_tutorial/exercise-3/toy-flask/:
+  > docker-compose -p tutorial down --remove-orphans
+  
+  # --remove-orphans: remove containers in the project that aren't specified in
+  #                   in the current Docker Compose configuration (in this case,
+  #                   the Elasticsearch container)
+  ```
+
+  > So what have we done so far? We've learned how to connect containers together
+  > with Docker networking and we've put a bunch of them together into a basic
+  > application stack with load balancing. On top of that, we're now able to do
+  > it easily and consistently with a couple of reusable configuration files and
+  > short commands. That we were able to reuse the Docker Compose configuration
+  > from the first exercise shows that we have the flexibility to both work with 
+  > parts of a stack and its entirety without rewriting config--that's incredibly
+  > convenient!
 
 --------------------------------------------------------------------------------
 
