@@ -9,7 +9,20 @@ end of these, exercises you should be able to:
 - Manage images, containers, networks locally
 - Run multiple images locally with proper networking between them
 - Inspect/debug running containers
-- Write Docker Compose configurations to store architecture configuration
+- Write Docker Compose configurations to model your application architecture
+
+## Table of Contents
+
+- [Requirements](#requirements)
+- [Reference](#reference)
+- Exercises
+  - [Exercise 1](#exercise-1)
+  - [Exercise 2](#exercise-2)
+  - [Exercise 3](#exercise-3)
+  - [Exercise 4](#exercise-4)
+  - [Exercise 5](#exercise-5)
+- [Conclusion](#conclusion)
+- [Further Reading](#further-reading)
 
 ## Requirements
 
@@ -303,8 +316,8 @@ and use Docker Compose to work with frequently used setups.
   docker run -e discovery.type=single-node -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ docker.elastic.co/elasticsearch/elasticsearch:6.3.0
   ```
 
-  > Refer back to the [reference links](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/README.md#reference)
-  > for more documentation on Docker Compose files.
+  > Refer back to the [reference links](#reference) for more documentation
+  > on Docker Compose files.
 
 - So now if we start our Docker Compose configuration, we'll have started an
   Elasticsearch container with the same exact setup as before:
