@@ -594,26 +594,21 @@ Elasticsearch instance.
       {
           "Name": "tutorial",
           "Id": "<network_id>",
-
           // ...
-          
           "Containers": {
               "<container_id>": {
                   "Name": "tut-elasticsearch",
-                  "EndpointID": "bebd5c6d7b3319565fca4c992354ff949de4d9420da9c3c3c17a1cd6bb7f2b6a",
-                  "MacAddress": "02:42:ac:12:00:02",
+                  // ...
                   "IPv4Address": "172.18.0.2/16",
-                  "IPv6Address": ""
+                  // ...
               },
               "<container_id>": {
                   "Name": "tut-toy-flask",
-                  "EndpointID": "021a86774597af208ed7b153ec1d9ce88ae174ebdbeae0121db2bcbaee815242",
-                  "MacAddress": "02:42:ac:12:00:03",
+                  // ...
                   "IPv4Address": "172.18.0.3/16",
-                  "IPv6Address": ""
+                  / ...
               }
           },
-          
           // ...
       }
   ]
@@ -719,49 +714,30 @@ Elasticsearch instance.
       {
           "Name": "tutorial_default",
           "Id": "<network_id>",
-          
           // ...
-          
           "Containers": {
               "<container_id>": {
                   "Name": "tutorial_toy-flask-2_1",
-                  "EndpointID": "7c4fe70c3dd0f1592c9bad2e910861cb999bad77143add46dd0fcd6b567162c4",
-                  "MacAddress": "02:42:ac:14:00:05",
-                  "IPv4Address": "172.20.0.5/16",
-                  "IPv6Address": ""
+                  // ...
               },
               "<container_id>": {
                   "Name": "tutorial_elasticsearch_1",
-                  "EndpointID": "5bae1ec0d14c1e6d7a7bdb15948ad8ef2d5a604858b8b85b9c4ee53575644770",
-                  "MacAddress": "02:42:ac:14:00:02",
-                  "IPv4Address": "172.20.0.2/16",
-                  "IPv6Address": ""
+                  // ...
               },
               "<container_id>": {
                   "Name": "tutorial_toy-flask-3_1",
-                  "EndpointID": "292423e4192128bbe42ba94b95531496454b6e4681e61ce6168f2b0ee0a70d0b",
-                  "MacAddress": "02:42:ac:14:00:03",
-                  "IPv4Address": "172.20.0.3/16",
-                  "IPv6Address": ""
+                  // ...
               },
               "<container_id>": {
                   "Name": "tutorial_toy-flask-1_1",
-                  "EndpointID": "871805d71dc1e233c9fc5d7463f1f4ff642eb02c2191621d5d1b6a76a55a41c4",
-                  "MacAddress": "02:42:ac:14:00:06",
-                  "IPv4Address": "172.20.0.6/16",
-                  "IPv6Address": ""
+                  // ...
               },
               "<container_id>": {
                   "Name": "tutorial_nginx_1",
-                  "EndpointID": "9d7103d6cec384f7a272a3265ab146cb2798ed1250fb9361b665e1c4cdfb05a6",
-                  "MacAddress": "02:42:ac:14:00:04",
-                  "IPv4Address": "172.20.0.4/16",
-                  "IPv6Address": ""
+                  // ...
               }
           },
-          
           // ...
-          
           "Labels": {
               "com.docker.compose.network": "default",
               "com.docker.compose.project": "tutorial",
@@ -841,10 +817,10 @@ __TODO__:
 That we can tear down and bring up the entire stack to a known base state makes
 application development and testing easier.
 
-Portable, clean
+The Docker workflow is portable and clean.
 
 There are quite a few Docker and Docker Compose commands that weren't covered
-here, but
+here, but...
 
 ## Further Reading
 
