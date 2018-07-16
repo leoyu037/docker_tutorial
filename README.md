@@ -14,12 +14,15 @@ end of these, exercises you should be able to:
 ## Requirements
 
 This tutorial assumes that you already have latest version of Docker installed 
-and an account on Dockerhub per the requirements below.
+and an account on Dockerhub per the requirements below:
 
 - [Docker](https://store.docker.com/search?offering=community&type=edition)
   - Also available via homebrew for macOS: `brew cask install docker`
 - [Dockerhub Account](https://hub.docker.com/)
   - Register for a Dockerhub account
+  
+No prior knowledge of Docker is required for this tutorial, but see [here](https://docs.docker.com/engine/docker-overview/)
+for an overview of the general concepts if you are interested.
 
 First, clone this repository:
 
@@ -449,10 +452,18 @@ DockerHub.
   > docker rmi <your_username>/toy-flask:0.0.1
   > docker run -p 80:80 -d <your_username>/toy-flask:0.0.1
   ```
+  
+> Cool, now we know the general structure of a Dockerfile and how to publish our
+> own images to DockerHub. As we'll see later, the contents of a Docker image are
+> fully transparent, so be very careful not to build sensitive information like
+> keys and passwords into an image.
 
 --------------------------------------------------------------------------------
 
 ## Exercise 3
+
+Let's make our Flask app more useful and give it some endpoints to query our
+Elasticsearch instance.
 
 --------------------------------------------------------------------------------
 
@@ -461,6 +472,9 @@ DockerHub.
 --------------------------------------------------------------------------------
 
 ## Conclusion
+
+There are quite a few Docker and Docker Compose commands that weren't covered
+here, but 
 
 ## Further Reading
 
