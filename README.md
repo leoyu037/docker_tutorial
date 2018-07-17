@@ -823,10 +823,13 @@ also includes a scheduler process called Beat and a web UI called Flower.
       └── task.py             # Celery task definitions
   ```
   
-  Our Celery app defines two tasks that print messages and schedules them to be run
-  every five seconds on different queues.
+  Our Celery app defines two tasks that print messages and schedules them to be
+  run every five seconds on different queues. The Dockerfile has a similar
+  structure to the Dockerfile for our toy Flask app:
   
   ```bash
+  # From docker_tutorial/exercise-4/:
+  > cd toy-celery-basic/
   > cat Dockerfile
   ```
   ```Dockerfile
@@ -852,10 +855,13 @@ also includes a scheduler process called Beat and a web UI called Flower.
 
   CMD ["./scripts/start-celery.sh"]
   ```
-  
-  The Dockerfile has a similar structure to the Dockerfile for our toy Flask app.
+
+  The Docker Compose config defines a Redis container that will serve as our
+  Celery app's task broker, two workers configured to service the two different
+  queues, and the Beat scheduler and Flower UI:
   
   ```bash
+  # From docker_tutorial/exercise-4/toy-celery-basic:
   > cat docker-compose.yaml
   ```
   ```yaml
@@ -867,45 +873,59 @@ also includes a scheduler process called Beat and a web UI called Flower.
       ports:
         - '6379:6379'
     toy-celery-worker:
+      # Specifies the build context to use when Docker Compose is used to build
+      # all images in this config
       build: .
       image: toy-celery:local
-      # volumes:
-      #   - ./:/srv/
       environment:
-        - C_FORCE_ROOT=True
+        - C_FORCE_ROOT=True     # Has to do w/ Celery, ignore
         - RUN_MODE=worker
         - QUEUES=celery
     toy-celery-worker2:
       build: .
       image: toy-celery:local
-      # volumes:
-      #   - ./:/srv/
       environment:
-        - C_FORCE_ROOT=True
+        - C_FORCE_ROOT=True     # Has to do w/ Celery, ignore
         - RUN_MODE=worker
         - QUEUES=goodbye
     toy-celery-beat:
       build: .
       image: toy-celery:local
-      # volumes:
-      #   - ./:/srv/
       environment:
-        - RUN_MODE=beat=
+        - RUN_MODE=beat
     toy-celery-flower:
       build: .
       image: toy-celery:local
-      # volumes:
-      #   - ./:/srv/
       environment:
         - RUN_MODE=flower
       ports:
         - '5555:5555'
+      # Override the default Docker command when starting this container
       command: sh -c 'sleep 5; ./scripts/start-celery.sh'
   ```
   
+- Let's build our toy Celery app image and run the setup:
+
+  ```bash
+  # From docker_tutorial/exercise-4/toy-celery-basic:
+  > docker-compose build
+  > docker-compose up -d
+  > docker-compose logs -f
   
-  
-We're running 2 different versions of Postgres
+  # ...
+  toy-celery-beat_1            | [2018-07-17 20:23:28,260: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
+  toy-celery-beat_1            | [2018-07-17 20:23:28,268: INFO/MainProcess] Scheduler: Sending due task goodbye-every-5s (print.goodbye)
+  toy-celery-worker_1          | [2018-07-17 20:23:28,276: WARNING/ForkPoolWorker-1] d23eed3376e4: Hello World!
+  toy-celery-worker2_1         | [2018-07-17 20:23:28,284: WARNING/ForkPoolWorker-1] e8c0c4368d55: Goodbye Cruel World!
+  # ...
+  ```
+
+- Observe worker task failing, inspect running container, find problem, rebuild, restart
+  container, observe fix, stop everything
+- mount volume, make another change, restart container without rebuilding
+- Change the schedule, rebuild container, restart beat, observe changes, stop everything
+- Add reindex tasks, start elasticsearch, start app w/ postgres, start flask app
+  - We're running 2 different versions of Postgres
 
 --------------------------------------------------------------------------------
 
