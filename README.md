@@ -138,6 +138,9 @@ Elasticsearch developers build and maintain.
 
   # -f: (follow) show new logs as they are generated
   ```
+  
+  > If you choose to reference a container/image/network by id, you can use a
+  > truncated version of it as long as the truncated version is still unique.
 
   We should eventually see in the logs that Elasticsearch has started. Press
   `Ctrl-C` to exit the log tailing. To confirm that Elasticsearch is up, query
@@ -385,9 +388,11 @@ DockerHub.
 
   WORKDIR /app
 
+  # Install python dependencies
   COPY setup.py setup.py
   RUN python setup.py install
 
+  # Copy source code
   COPY app.py app.py
 
   CMD flask run -h 0.0.0.0 -p 80
@@ -788,7 +793,119 @@ Elasticsearch instance.
 
 ## Exercise 4
 
-__TODO__
+In this exercise, we'll learn a basic local development flow for working with a
+distributed app. A toy Python app using [Celery](http://www.celeryproject.org/)
+has been provided. 
+
+Celery is a distributed task queue that typically uses RabbitMQ or Redis as the
+message broker and Python workers deployed to one or more servers. Our setup
+also includes a scheduler process called Beat and a web UI called Flower.
+
+- Lets take a look at the project contents:
+
+  ```bash
+  # From docker_tutorial/:
+  > cd exercise-4/
+  > tree toy-celery-basic/
+  
+  toy-celery-basic
+  ├── Dockerfile
+  ├── README.md
+  ├── docker-compose.yaml
+  ├── scripts
+  │   └── start-celery.sh     # Docker entrypoint for starting the app components
+  │                           # based on the RUN_MODE env var
+  ├── setup.py
+  └── toy_app
+      ├── __init__.py
+      ├── app.py              # Celery app definition
+      ├── schedule.py         # Celery task schedule
+      └── task.py             # Celery task definitions
+  ```
+  
+  Our Celery app defines two tasks that print messages and schedules them to be run
+  every five seconds on different queues.
+  
+  ```bash
+  > cat Dockerfile
+  ```
+  ```Dockerfile
+  # Dockerfile
+  FROM python:3-alpine
+
+  ENV DIR /srv
+  WORKDIR ${DIR}
+
+  # Install system dependencies
+  RUN apk add --update --no-cache \
+          bash \
+          curl \
+      rm -rf /var/cache/apk/*
+
+  # Install python dependencies
+  COPY ./setup.py ${DIR}/
+  RUN pip install -e .
+
+  # Copy source code
+  COPY ./toy_app/ ${DIR}/toy_app/
+  COPY ./scripts/ ${DIR}/scripts/
+
+  CMD ["./scripts/start-celery.sh"]
+  ```
+  
+  The Dockerfile has a similar structure to the Dockerfile for our toy Flask app.
+  
+  ```bash
+  > cat docker-compose.yaml
+  ```
+  ```yaml
+  # docker-compose.yaml
+  version: '3'
+  services:
+    toy-celery-broker-backend:
+      image: redis
+      ports:
+        - '6379:6379'
+    toy-celery-worker:
+      build: .
+      image: toy-celery:local
+      # volumes:
+      #   - ./:/srv/
+      environment:
+        - C_FORCE_ROOT=True
+        - RUN_MODE=worker
+        - QUEUES=celery
+    toy-celery-worker2:
+      build: .
+      image: toy-celery:local
+      # volumes:
+      #   - ./:/srv/
+      environment:
+        - C_FORCE_ROOT=True
+        - RUN_MODE=worker
+        - QUEUES=goodbye
+    toy-celery-beat:
+      build: .
+      image: toy-celery:local
+      # volumes:
+      #   - ./:/srv/
+      environment:
+        - RUN_MODE=beat=
+    toy-celery-flower:
+      build: .
+      image: toy-celery:local
+      # volumes:
+      #   - ./:/srv/
+      environment:
+        - RUN_MODE=flower
+      ports:
+        - '5555:5555'
+      command: sh -c 'sleep 5; ./scripts/start-celery.sh'
+  ```
+  
+  
+  
+We're running 2 different versions of Postgres
 
 --------------------------------------------------------------------------------
 
