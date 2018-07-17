@@ -40,8 +40,8 @@ general concepts if you are interested.
 First, clone this repository:
 
 ```bash
-git clone https://github.com/leoyu037/docker_tutorial .
-cd docker_tutorial/
+> git clone https://github.com/leoyu037/docker_tutorial .
+> cd docker_tutorial/
 ```
 
 ## Reference
@@ -60,9 +60,9 @@ And if things get hairy, here is a command to help reset your docker environment
 
 ```bash
 # Kill all containers
-docker kill `docker ps -q`
+> docker kill `docker ps -q`
 # Remove all containers, networks, and images that aren't related to a running container
-docker system prune --all
+> docker system prune --all
 ```
 
 --------------------------------------------------------------------------------
