@@ -395,7 +395,7 @@ DockerHub.
   # Copy source code
   COPY app.py app.py
 
-  CMD flask run -h 0.0.0.0 -p 80
+  CMD exec flask run -h 0.0.0.0 -p 80
   ```
 
   This Dockerfile specifies a base image to build off of, sets a working
@@ -427,6 +427,41 @@ DockerHub.
   Hello World!
   Path: some/path/
   ```
+
+- Let's examine the contents of our container by 'sshing' into it. We do this by
+  starting a second process inside the container (in this case, shell):
+
+  ```bash
+  > docker exec -it <container_name/id> sh
+  
+  # These two options together allow us to interact with a container from the
+  # command line:
+  # -i: keep STDIN open
+  # -t: allocate a pseudo-tty
+  
+  # From inside the container:
+  /app > ls
+  
+  __pycache__         build               setup.py
+  app.py              dist                toy_flask.egg-info
+  
+  /app > ps
+  
+  PID   USER     TIME   COMMAND
+    1 root       0:00 {flask} /usr/local/bin/python /usr/local/bin/flask run -h 0.0.0.0 -p 80
+   15 root       0:00 sh
+   19 root       0:00 ps  
+  ```
+  
+  As we can see, we're dropped directly into the container's working directory
+  (which we defined in the Dockerfile), and it contains the two files that we
+  added to the image, as well as a bunch of build artifacts from installing the
+  Python dependencies into the image. And besides our shell and ps processes, 
+  there is only the Flask process running in the container.
+  
+  > Notice that Flask is PID 1--it's best practice to ensure that the container's
+  > main process is PID 1 if you want your process to receive signals properly
+  > from Docker.
 
 - Now that we have a working image, let's publish it to DockerHub. First we need
   to create a new repository for our image. Go to [DockerHub](https://hub.docker.com),
