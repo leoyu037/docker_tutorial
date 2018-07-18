@@ -461,7 +461,8 @@ DockerHub.
   
   > Notice that Flask is PID 1--it's best practice to ensure that the container's
   > main process is PID 1 if you want your process to receive signals properly
-  > from Docker.
+  > from Docker. See this [Elastic.co blogpost](https://www.elastic.io/nodejs-as-pid-1-under-docker-images/)
+  > for an in-depth explanation.
 
 - Now that we have a working image, let's publish it to DockerHub. First we need
   to create a new repository for our image. Go to [DockerHub](https://hub.docker.com),
@@ -829,8 +830,8 @@ Elasticsearch instance.
 ## Exercise 4
 
 In this exercise, we'll learn a basic local development flow for working with a
-distributed app. A toy Python app using [Celery](http://www.celeryproject.org/)
-has been provided. 
+distributed app while tying all of our containers together. A toy Python app 
+using [Celery](http://www.celeryproject.org/) has been provided. 
 
 Celery is a distributed task queue that typically uses RabbitMQ or Redis as the
 message broker and Python workers deployed to one or more servers. Our setup
@@ -841,30 +842,34 @@ also includes a scheduler process called Beat and a web UI called Flower.
   ```bash
   # From docker_tutorial/:
   > cd exercise-4/
-  > tree toy-celery-basic/
-  
-  toy-celery-basic
+  > tree toy-celery/
+      
+  toy-celery
   ├── Dockerfile
   ├── README.md
   ├── docker-compose.yaml
   ├── scripts
-  │   └── start-celery.sh     # Docker entrypoint for starting the app components
+  │   └── start-celery.sh     # Docker entrypoint for starting the app components
   │                           # based on the RUN_MODE env var
   ├── setup.py
   └── toy_app
       ├── __init__.py
       ├── app.py              # Celery app definition
+      ├── db.py               # Database driver
       ├── schedule.py         # Celery task schedule
       └── task.py             # Celery task definitions
   ```
   
-  Our Celery app defines two tasks that print messages and schedules them to be
-  run every five seconds on different queues. The Dockerfile has a similar
-  structure to the Dockerfile for our toy Flask app:
+  Our Celery app defines a dummy 'Hello World!' task that's scheduled to run
+  every 5 seconds on its own queue. There are also two tasks to reindex owner
+  and pet data from two Postgres databases to our Elasticsearch, and those run
+  every 15 seconds. The database and Elasticsearch hosts are configurable via
+  environment variables. The Dockerfile has a similar structure to the
+  Dockerfile for our toy Flask app:
   
   ```bash
   # From docker_tutorial/exercise-4/:
-  > cd toy-celery-basic/
+  > cd toy-celery/
   > cat Dockerfile
   ```
   ```Dockerfile
@@ -878,7 +883,14 @@ also includes a scheduler process called Beat and a web UI called Flower.
   RUN apk add --update --no-cache \
           bash \
           curl \
+          postgresql-dev && \
       rm -rf /var/cache/apk/*
+
+  # Install psycopg2
+  RUN apk add --update --no-cache --virtual build-dependencies \
+          gcc musl-dev && \
+      pip install psycopg2 && \
+      apk del build-dependencies
 
   # Install python dependencies
   COPY ./setup.py ${DIR}/
@@ -896,77 +908,273 @@ also includes a scheduler process called Beat and a web UI called Flower.
   queues, and the Beat scheduler and Flower UI:
   
   ```bash
-  # From docker_tutorial/exercise-4/toy-celery-basic:
+  # From docker_tutorial/exercise-4/toy-celery/:
   > cat docker-compose.yaml
   ```
   ```yaml
-  # docker-compose.yaml
+  # docker-compose.yaml     
   version: '3'
   services:
     toy-celery-broker-backend:
       image: redis
       ports:
         - '6379:6379'
-    toy-celery-worker:
+    toy-celery-worker-hello:
       # Specifies the build context to use when Docker Compose is used to build
       # all images in this config
       build: .
       image: toy-celery:local
+      volumes:
+        # Mount current folder as the container working dir
+        - ./:/srv/
       environment:
-        - C_FORCE_ROOT=True     # Has to do w/ Celery, ignore
-        - RUN_MODE=worker
-        - QUEUES=celery
-    toy-celery-worker2:
+        - C_FORCE_ROOT=True         # Has to do w/ Celery, ignore
+        - RUN_MODE=worker           # Start the container as a worker
+        - QUEUES=hello              # Only service the 'hello' queue
+    toy-celery-worker-tut:
       build: .
       image: toy-celery:local
+      volumes:
+        - ./:/srv/
       environment:
-        - C_FORCE_ROOT=True     # Has to do w/ Celery, ignore
+        - C_FORCE_ROOT=True
         - RUN_MODE=worker
-        - QUEUES=goodbye
+        - QUEUES=docker_tut
+        - ES_HOST=elasticsearch     # Refers to ES defined in another config
+        - OWNER_DB_HOST=owner_db    # Refers to db defined in another config
+        - OWNER_DB_PORT=5432
+        - PET_DB_HOST=pet_db        # Refers to db defined in another config
+        - PET_DB_PORT=5432
     toy-celery-beat:
       build: .
       image: toy-celery:local
+      volumes:
+        - ./:/srv/
       environment:
         - RUN_MODE=beat
+      # Override the default Docker command when starting this container
+      command: sh -c 'rm celerybeat*; ./scripts/start-celery.sh'
     toy-celery-flower:
       build: .
       image: toy-celery:local
+      volumes:
+        - ./:/srv/
       environment:
         - RUN_MODE=flower
       ports:
         - '5555:5555'
-      # Override the default Docker command when starting this container
       command: sh -c 'sleep 5; ./scripts/start-celery.sh'
   ```
   
-- Let's build our toy Celery app image and run the setup:
+  All of our containers, save for the broker, use the same source and thus the
+  same image (that's just how Celery works).
+  
+  > Another thing to note is that in each of our Celery services, we're
+  > mounting the project directory into the working directory of the container,
+  > effectively replacing the container's source with the source from our local
+  > file system. You'll see that this can be sort of a shortcut for quickly
+  > testing code changes in your app without having to rebuild the image each
+  > time. However, in general it's better to have a Dockerfile optimized for
+  > quick, cached builds in a local development flow.
+  
+- Let's build our toy Celery app image and start our app:
 
   ```bash
-  # From docker_tutorial/exercise-4/toy-celery-basic:
+  # From docker_tutorial/exercise-4/toy-celery/:
   > docker-compose build
+  
+  # Let's set COMPOSE_PROJECT_NAME so we don't have to keep specifying
+  # '-p tutorial' in all of our Docker Compose commands for the rest of the
+  # tutorial.
+  > export COMPOSE_PROJECT_NAME=tutorial
+  
   > docker-compose up -d
   > docker-compose logs -f
   
   # ...
-  toy-celery-beat_1            | [2018-07-17 20:23:28,260: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
-  toy-celery-beat_1            | [2018-07-17 20:23:28,268: INFO/MainProcess] Scheduler: Sending due task goodbye-every-5s (print.goodbye)
-  toy-celery-worker_1          | [2018-07-17 20:23:28,276: WARNING/ForkPoolWorker-1] d23eed3376e4: Hello World!
-  toy-celery-worker2_1         | [2018-07-17 20:23:28,284: WARNING/ForkPoolWorker-1] e8c0c4368d55: Goodbye Cruel World!
+  toy-celery-beat_1            | [2018-07-18 18:50:23,028: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
+  toy-celery-worker-hello_1    | [2018-07-18 18:50:23,033: WARNING/ForkPoolWorker-1] 099f39f8d55a: Hello World!
+  toy-celery-beat_1            | [2018-07-18 18:50:28,029: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
+  toy-celery-worker-hello_1    | [2018-07-18 18:50:28,036: WARNING/ForkPoolWorker-1] 099f39f8d55a: Hello World!
+  toy-celery-beat_1            | [2018-07-18 18:50:33,029: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
+  toy-celery-beat_1            | [2018-07-18 18:50:33,038: INFO/MainProcess] Scheduler: Sending due task reindex-owners (docker_tut.reindex_owners)
+  toy-celery-beat_1            | [2018-07-18 18:50:33,038: INFO/MainProcess] Scheduler: Sending due task reindex-pets (docker_tut.reindex_pets)
+  toy-celery-worker-hello_1    | [2018-07-18 18:50:33,039: WARNING/ForkPoolWorker-1] 099f39f8d55a: Hello World!
+  toy-celery-worker-tut_1      | [2018-07-18 18:50:33,049: WARNING/ForkPoolWorker-1] Error: could not translate host name "owner_db" to address: Name does not resolve
+  toy-celery-worker-tut_1      | [2018-07-18 18:50:33,055: ERROR/ForkPoolWorker-1] Task docker_tut.reindex_owners[8d6fcba2-368a-45aa-9df4-18049f6dd513] raised unexpected: OperationalError('could not translate host name "owner_db" to address: Name does not resolve\n',)
+  toy-celery-worker-tut_1      | Traceback (most recent call last):
+  toy-celery-worker-tut_1      |   File "/usr/local/lib/python3.6/site-packages/celery/app/trace.py", line 382, in trace_task
+  toy-celery-worker-tut_1      |     R = retval = fun(*args, **kwargs)
+  toy-celery-worker-tut_1      |   File "/usr/local/lib/python3.6/site-packages/celery/app/trace.py", line 641, in __protected_call__
+  toy-celery-worker-tut_1      |     return self.run(*args, **kwargs)
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/task.py", line 74, in reindex_owners
+  toy-celery-worker-tut_1      |     return _etl(OWNER_DB_HOST, OWNER_DB_PORT, OWNER_SQL, ES_HOST, 'owner', 'owner_id')
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/task.py", line 29, in _etl
+  toy-celery-worker-tut_1      |     host=psql_host, port=psql_port) as conn:
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/db.py", line 34, in __enter__
+  toy-celery-worker-tut_1      |     raise exc
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/db.py", line 31, in __enter__
+  toy-celery-worker-tut_1      |     self.conn = self._connection()
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/db.py", line 24, in _connection
+  toy-celery-worker-tut_1      |     connect_timeout=60
+  toy-celery-worker-tut_1      |   File "/usr/local/lib/python3.6/site-packages/psycopg2/__init__.py", line 130, in connect
+  toy-celery-worker-tut_1      |     conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+  toy-celery-worker-tut_1      | psycopg2.OperationalError: could not translate host name "owner_db" to address: Name does not resolve
+  toy-celery-worker-tut_1      |
+  toy-celery-worker-tut_1      | [2018-07-18 18:50:33,078: WARNING/ForkPoolWorker-1] Error: could not translate host name "pet_db" to address: Name does not resolve
+  toy-celery-worker-tut_1      | [2018-07-18 18:50:33,088: ERROR/ForkPoolWorker-1] Task docker_tut.reindex_pets[a621ae11-5443-49c1-a7e2-ccb0568dd37d] raised unexpected: OperationalError('could not translate host name "pet_db" to address: Name does not resolve\n',)
+  toy-celery-worker-tut_1      | Traceback (most recent call last):
+  toy-celery-worker-tut_1      |   File "/usr/local/lib/python3.6/site-packages/celery/app/trace.py", line 382, in trace_task
+  toy-celery-worker-tut_1      |     R = retval = fun(*args, **kwargs)
+  toy-celery-worker-tut_1      |   File "/usr/local/lib/python3.6/site-packages/celery/app/trace.py", line 641, in __protected_call__
+  toy-celery-worker-tut_1      |     return self.run(*args, **kwargs)
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/task.py", line 96, in reindex_pets
+  toy-celery-worker-tut_1      |     return _etl(PET_DB_HOST, PET_DB_PORT, PET_SQL, ES_HOST, 'pet', 'pet_id')
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/task.py", line 29, in _etl
+  toy-celery-worker-tut_1      |     host=psql_host, port=psql_port) as conn:
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/db.py", line 34, in __enter__
+  toy-celery-worker-tut_1      |     raise exc
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/db.py", line 31, in __enter__
+  toy-celery-worker-tut_1      |     self.conn = self._connection()
+  toy-celery-worker-tut_1      |   File "/srv/toy_app/db.py", line 24, in _connection
+  toy-celery-worker-tut_1      |     connect_timeout=60
+  toy-celery-worker-tut_1      |   File "/usr/local/lib/python3.6/site-packages/psycopg2/__init__.py", line 130, in connect
+  toy-celery-worker-tut_1      |     conn = _connect(dsn, connection_factory=connection_factory, **kwasync)
+  toy-celery-worker-tut_1      | psycopg2.OperationalError: could not translate host name "pet_db" to address: Name does not resolve
+  toy-celery-worker-tut_1      |
   # ...
   ```
+  
+  We should see from the logs that our Beat container is scheduling the two tasks
+  as expected and the workers dequeueing the tasks off of their respective queues
+  and executing them. We can also visit `localhost:5555` in a browser for the app
+  UI. It looks like the dummy task is running properly, but the reindexer tasks
+  are failing (because it can't connect to the Postgres databases that we didn't
+  start).
+  
+- To fix this, `Ctrl-C` out of the Docker Compose log tailing and start the
+  Elasticsearch and Postgres databases:
+  
+  ```bash
+  # From docker_tutorial/exercise-4/toy-celery/:
+  > cd ../elasticsearch
+  > docker-compose up -d
+  > cd ../postgres
+  > docker-compose up -d
+  > cd ../toy-celery
+  > docker-compose logs -t 50 -f
+  
+  # -t, --tail: show the last N lines of logs
+  
+  # We should begin to see the reindexer tasks complete successfully
+  # ...
+  toy-celery-beat_1            | [2018-07-18 18:50:18,028: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
+  toy-celery-worker-hello_1    | [2018-07-18 18:50:18,037: WARNING/ForkPoolWorker-1] 099f39f8d55a: Hello World!
+  toy-celery-beat_1            | [2018-07-18 18:50:18,038: INFO/MainProcess] Scheduler: Sending due task reindex-owners (docker_tut.reindex_owners)
+  toy-celery-beat_1            | [2018-07-18 18:50:18,053: INFO/MainProcess] Scheduler: Sending due task reindex-pets (docker_tut.reindex_pets)
+  toy-celery-worker-tut_1      | [2018-07-18 18:50:18,176: WARNING/ForkPoolWorker-1] owner ETL result: {'success': 3, 'failed': 0, 'failed_items': []}
+  toy-celery-worker-tut_1      | [2018-07-18 18:50:18,292: WARNING/ForkPoolWorker-1] pet ETL result: {'success': 8, 'failed': 0, 'failed_items': []}
+  # ...
+  ```
+  
+  > Side note: if you look at `postgres/docker-compose.yaml`, you'll see that the
+  > two services are actually running two different versions of Postgres. This is a
+  > perfect example of how Docker's environment isolation makes running apps
+  > concurrently easy and clean--I haven't tried to run two different versions of a
+  > datastore on my local development machine at the same time, but I imagine that
+  > it'd be painful.
+  
+- Let's comment out the dummy task since we don't need it running anymore:
+  
+  ```python
+  # toy_app/schedule.py
+  CELERYBEAT_SCHEDULE = {
+    # Running in default 'celery' queue
+    # 'hello-every-5s': {
+    #     'task': 'print.hello',
+    #     'schedule': 5,  # 5s
+    #     'options': {'queue': 'hello'},
+    # },
 
-- Observe worker task failing, inspect running container, find problem, rebuild, restart
-  container, observe fix, stop everything
-- mount volume, make another change, restart container without rebuilding
-- Change the schedule, rebuild container, restart beat, observe changes, stop everything
-- Add reindex tasks, start elasticsearch, start app w/ postgres, start flask app
-  - We're running 2 different versions of Postgres
+    # Reindex owners every 15s
+    'reindex-owners': {
+        'task': 'docker_tut.reindex_owners',
+        'schedule': 15,
+        'options': {'queue': 'docker_tut'},
+    },
 
---------------------------------------------------------------------------------
+    # Reindex pets every 15s
+    'reindex-pets': {
+        'task': 'docker_tut.reindex_pets',
+        'schedule': 15,
+        'options': {'queue': 'docker_tut'},
+    },
+  }
+  ```
+  
+  Stop the Beat container and start it again:
+  
+  ```bash
+  # From docker_tutorial/exercise-4/toy-celery/:
+  > docker-compose kill toy-celery-beat
+  > docker-compose up -d toy-celery-beat
+  > docker-compose logs -f toy-celery-beat
+  
+  toy-celery-beat_1            | [2018-07-18 19:25:32,083: INFO/MainProcess] Scheduler: Sending due task reindex-owners (docker_tut.reindex_owners)
+  toy-celery-beat_1            | [2018-07-18 19:25:32,091: INFO/MainProcess] Scheduler: Sending due task reindex-pets (docker_tut.reindex_pets)
+  toy-celery-beat_1            | [2018-07-18 19:25:47,091: INFO/MainProcess] Scheduler: Sending due task reindex-pets (docker_tut.reindex_pets)
+  toy-celery-beat_1            | [2018-07-18 19:25:47,094: INFO/MainProcess] Scheduler: Sending due task reindex-owners (docker_tut.reindex_owners)
+  ```
+  
+  We should see that the new Beat container doesn't enqueue the dummy task
+  anymore, leaving the worker servicing that queue idle. And we didn't have to
+  rebuild our image because we're mounting the source from our local file system
+  into the container.
+  
+- To tie this all together, start the toy Flask setup:
 
-## Exercise 5
+  ```bash
+  # From docker_tutorial/exercise-4/toy-celery/:
+  > cd ../toy-flask/
+  > docker-compose up -d
+  > docker ps
+  
+  CONTAINER ID        IMAGE                                                 COMMAND                  CREATED                  STATUS              PORTS                              NAMES
+  <container_id>      nginx                                                 "nginx -g 'daemon of…"   Less than a second ago   Up 4 seconds        0.0.0.0:80->80/tcp                 tutorial_nginx_1
+  <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask-1_1
+  <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask-2_1
+  <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask-3_1
+  <container_id>      toy-celery:local                                      "sh -c 'sleep 5; ./s…"   Less than a second ago   Up 19 seconds       0.0.0.0:5555->5555/tcp             tutorial_toy-celery-flower_1
+  <container_id>      redis                                                 "docker-entrypoint.s…"   Less than a second ago   Up 19 seconds       0.0.0.0:6379->6379/tcp             tutorial_toy-celery-broker-backend_1
+  <container_id>      toy-celery:local                                      "./scripts/start-cel…"   Less than a second ago   Up 20 seconds                                          tutorial_toy-celery-worker-hello_1
+  <container_id>      toy-celery:local                                      "./scripts/start-cel…"   Less than a second ago   Up 20 seconds                                          tutorial_toy-celery-worker-tut_1
+  <container_id>      toy-celery:local                                      "sh -c 'rm celerybea…"   Less than a second ago   Up 20 seconds                                          tutorial_toy-celery-beat_1
+  <container_id>      docker.elastic.co/elasticsearch/elasticsearch:6.3.0   "/usr/local/bin/dock…"   8 seconds ago            Up 34 seconds       0.0.0.0:9200->9200/tcp, 9300/tcp   tutorial_elasticsearch_1
+  <container_id>      postgres:10-alpine                                    "docker-entrypoint.s…"   24 seconds ago           Up 49 seconds       0.0.0.0:5434->5432/tcp             tutorial_pet_db_1
+  <container_id>      postgres:11-alpine                                    "docker-entrypoint.s…"   24 seconds ago           Up 49 seconds       0.0.0.0:5433->5432/tcp             tutorial_owner_db_1
 
-__TODO__
+  > curl localhost/owner/alice
+  
+  {"age":20,"created":"2018-07-18T19:28:26.291558+00:00","id":"1","last_modified":"2018-07-18T19:28:26.291558+00:00","name":"Alice","owner_id":1}
+  ```
+ 
+  So we've got 12 containers representing a full application stack running on our
+  local machine, with no other system dependency besides Docker. This is the end
+  of the tutorial, but feel free to play around and make changes to the system to
+  get a feel for the Docker Compose development flow. Some things to try:
+  
+  - Changing data in the databases/Elasticsearch and watching it propagate
+    through the system
+  - Changing application code, stopping the relevant container, rebuilding, and
+    restarting the container into the stack
+  - Restarting the entire stack and reseting it to base state
+
+- When you're done experimenting, shut everything down:
+
+  ```bash
+  > docker rm `docker ps -aq` --force
+  > docker network prune
+  ```
 
 --------------------------------------------------------------------------------
 
