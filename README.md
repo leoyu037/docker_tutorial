@@ -20,7 +20,7 @@ end of these, exercises you should be able to:
 1. [Exercise 3: networking, container orchestration](#exercise-3)
 1. [Exercise 4: local development and debugging](#exercise-4)
 1. [Conclusion](#conclusion)
-1. [Further Reading](#further-reading)
+1. [More Resources](#more-resources)
 
 ## Requirements
 
