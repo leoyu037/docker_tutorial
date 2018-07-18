@@ -22,20 +22,6 @@ services:
       - C_FORCE_ROOT=True
       - RUN_MODE=worker
       - QUEUES=goodbye
-  toy-celery-worker3:
-    build: .
-    image: toy-celery:local
-    # volumes:
-    #   - ./:/srv/
-    environment:
-      - C_FORCE_ROOT=True
-      - RUN_MODE=worker
-      - QUEUES=docker_tut
-      - ES_HOST=elasticsearch
-      - OWNER_DB_HOST=owner_db
-      - OWNER_DB_PORT=5432 # Note this is NOT the port that owner_db is exposing to the local network
-      - PET_DB_HOST=pet_db
-      - PET_DB_PORT=5432
   toy-celery-beat:
     build: .
     image: toy-celery:local
