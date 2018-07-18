@@ -1182,7 +1182,8 @@ also includes a scheduler process called Beat and a web UI called Flower.
 ## Conclusion
 
 Hopefully going through these exercises has given you a taste for how to work
-with Docker and what local development can be like.
+with Docker and what local development can be like. How to do Docker-based
+testing, continuous integration, deployment, etc. is a topic for another day ;)
 
 ## More Resources
 
