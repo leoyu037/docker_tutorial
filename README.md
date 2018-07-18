@@ -19,7 +19,6 @@ end of these, exercises you should be able to:
 1. [Exercise 2: creating and pushing images](#exercise-2)
 1. [Exercise 3: networking, container orchestration](#exercise-3)
 1. [Exercise 4: local development and debugging](#exercise-4)
-1. [Exercise 5](#exercise-5)
 1. [Conclusion](#conclusion)
 1. [Further Reading](#further-reading)
 
@@ -33,6 +32,8 @@ and an account on Dockerhub per the requirements below:
 - [Dockerhub Account](https://hub.docker.com/)
   - Register for a Dockerhub account
 
+Also, it's recommended to increase Docker's memory and CPU allocation to at least 4gb
+and 2 CPUS, since we'll be running quite a few containers simultaneously by the end.
 No prior knowledge of Docker is required for this tutorial, but see
 [here](https://docs.docker.com/engine/docker-overview/) for an overview of the
 general concepts if you are interested.
@@ -1157,11 +1158,11 @@ also includes a scheduler process called Beat and a web UI called Flower.
   
   {"age":20,"created":"2018-07-18T19:28:26.291558+00:00","id":"1","last_modified":"2018-07-18T19:28:26.291558+00:00","name":"Alice","owner_id":1}
   ```
- 
-  So we've got 12 containers representing a full application stack running on our
-  local machine, with no other system dependency besides Docker. This is the end
-  of the tutorial, but feel free to play around and make changes to the system to
-  get a feel for the Docker Compose development flow. Some things to try:
+  
+  It all works! We have 12 containers representing a full application stack
+  running on our local machine. This is the end of the tutorial, but feel free
+  to play around and make changes to the system to get a feel for the Docker
+  Compose development flow. Some things to try:
   
   - Changing data in the databases/Elasticsearch and watching it propagate
     through the system
@@ -1180,16 +1181,10 @@ also includes a scheduler process called Beat and a web UI called Flower.
 
 ## Conclusion
 
-__TODO__: 
+Hopefully going through these exercises has given you a taste for how to work
+with Docker and what local development can be like.
 
-That we can tear down and bring up the entire stack to a known base state makes
-application development and testing easier.
-
-The Docker workflow is portable and clean.
-
-There are quite a few Docker and Docker Compose commands that weren't covered
-here, but...
-
-## Further Reading
+## More Resources
 
 - [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+- [Python Docker Driver](https://github.com/docker/docker-py)
