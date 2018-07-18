@@ -955,6 +955,12 @@ also includes a scheduler process called Beat and a web UI called Flower.
   toy-celery-worker2_1         | [2018-07-17 20:23:28,284: WARNING/ForkPoolWorker-1] e8c0c4368d55: Goodbye Cruel World!
   # ...
   ```
+  
+  We should see from the logs that our Beat container is scheduling the two tasks every
+  five seconds and the workers dequeueing the tasks and executing them. We can also
+  visit `localhost:5555` in a browser for the app UI.
+  
+- 
 
 - Observe worker task failing, inspect running container, find problem, rebuild, restart
   container, observe fix, stop everything
