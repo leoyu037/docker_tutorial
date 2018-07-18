@@ -461,7 +461,8 @@ DockerHub.
   
   > Notice that Flask is PID 1--it's best practice to ensure that the container's
   > main process is PID 1 if you want your process to receive signals properly
-  > from Docker.
+  > from Docker. See this [Elastic.co blogpost](https://www.elastic.io/nodejs-as-pid-1-under-docker-images/)
+  > for an in-depth explanation.
 
 - Now that we have a working image, let's publish it to DockerHub. First we need
   to create a new repository for our image. Go to [DockerHub](https://hub.docker.com),
@@ -959,6 +960,7 @@ also includes a scheduler process called Beat and a web UI called Flower.
   container, observe fix, stop everything
 - mount volume, make another change, restart container without rebuilding
 - Change the schedule, rebuild container, restart beat, observe changes, stop everything
+
 - Add reindex tasks, start elasticsearch, start app w/ postgres, start flask app
   - We're running 2 different versions of Postgres
 
