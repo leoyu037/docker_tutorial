@@ -1187,5 +1187,6 @@ testing, continuous integration, deployment, etc. is a topic for another day ;)
 
 ## More Resources
 
+- [Cheatsheet](https://github.com/leoyu037/cheatsheets/blob/master/docker.md)
 - [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 - [Python Docker Driver](https://github.com/docker/docker-py)
