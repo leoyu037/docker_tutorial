@@ -4,9 +4,6 @@
 Short intro, then everyone starts going through the exercises. I'll walk
 around and help people debug.
 
-- `master` branch with resources
-- `solutions` branch with answers
-
 ## Exercises
 
 1. Play with elasticsearch
@@ -58,7 +55,7 @@ postgres 2 ----|
   - Search > pull > run > debug > stop/kill
 - Local development
   - Build > run > debug > change code > rebuild > run
-- Clear out old containers/images/networks
+- DONE: Clear out old containers/images/networks
   - Clean
 
 ### Tasks to cover
@@ -84,12 +81,9 @@ postgres 2 ----|
     - DONE: ports
     - DONE: volumes
     - DONE: network
-    - entrypoint
-    - {command} - introduce a bug to debug
   - DONE: logs
-  - exec
+  - DONE: exec
   - DONE: stop
-  - restart
   - DONE: kill
   - DONE: prune
 - Network
@@ -97,19 +91,18 @@ postgres 2 ----|
   - DONE: create
   - DONE: inspect
   - DONE: rm
-  - prune
+  - DONE: prune
 - Docker Compose
   - DONE: write
-  - build
+  - DONE: build
   - DONE: up
     - project
   - DONE: ps
-  - run
-  - exec
+  - DONE: exec
   - DONE: logs
   - DONE: stop
   - DONE: kill
-  - down
+  - DONE: down
 
 --------------------------------------------------------------------------------
 
