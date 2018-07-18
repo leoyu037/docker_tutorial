@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-queues=${QUEUES:-'celery,goodbye'}
+queues=${QUEUES:-'celery,hello,docker_tut'}
 
 if [ -z "$RUN_MODE" ]; then
   RUN_MODE="noop"

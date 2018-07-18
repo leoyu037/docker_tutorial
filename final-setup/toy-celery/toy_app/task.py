@@ -13,11 +13,6 @@ def hello():
     print('{}: Hello World!'.format(os.environ.get('HOSTNAME')))
 
 
-@shared_task(name='print.goodbye')
-def goodbye():
-    print('{}: Goodbye Cruel World!'.format(os.environ.get('HOSTNAME')))
-
-
 def _psql_row_to_es_doc(row, index, id_field='id'):
     doc = {}
     doc['_index'] = index

@@ -4,50 +4,42 @@ services:
     image: redis
     ports:
       - '6379:6379'
-  toy-celery-worker:
+  toy-celery-worker-hello:
     build: .
     image: toy-celery:local
-    # volumes:
-    #   - ./:/srv/
+    volumes:
+      - ./:/srv/
     environment:
       - C_FORCE_ROOT=True
       - RUN_MODE=worker
-      - QUEUES=celery
-  toy-celery-worker2:
+      - QUEUES=hello
+  toy-celery-worker-tut:
     build: .
     image: toy-celery:local
-    # volumes:
-    #   - ./:/srv/
-    environment:
-      - C_FORCE_ROOT=True
-      - RUN_MODE=worker
-      - QUEUES=goodbye
-  toy-celery-worker3:
-    build: .
-    image: toy-celery:local
-    # volumes:
-    #   - ./:/srv/
+    volumes:
+      - ./:/srv/
     environment:
       - C_FORCE_ROOT=True
       - RUN_MODE=worker
       - QUEUES=docker_tut
       - ES_HOST=elasticsearch
       - OWNER_DB_HOST=owner_db
-      - OWNER_DB_PORT=5432 # Note this is NOT the port that owner_db is exposing to the local network
+      - OWNER_DB_PORT=5432
       - PET_DB_HOST=pet_db
       - PET_DB_PORT=5432
   toy-celery-beat:
     build: .
     image: toy-celery:local
-    # volumes:
-    #   - ./:/srv/
+    volumes:
+      - ./:/srv/
     environment:
       - RUN_MODE=beat
+    command: sh -c 'rm celerybeat*; ./scripts/start-celery.sh'
   toy-celery-flower:
     build: .
     image: toy-celery:local
-    # volumes:
-    #   - ./:/srv/
+    volumes:
+      - ./:/srv/
     environment:
       - RUN_MODE=flower
     ports:
