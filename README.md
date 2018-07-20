@@ -91,6 +91,7 @@ Elasticsearch developers build and maintain.
 - Let's download the latest Elasticsearch as our first image:
 
   ```bash
+  # On the command line:
   > docker pull elasticsearch    # specifying an image with no tag defaults to 'latest'
 
   # Or more explicitly:
