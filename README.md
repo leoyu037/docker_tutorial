@@ -135,9 +135,12 @@ Elasticsearch developers build and maintain.
   container name from the output of the `docker ps` command to examine the
   container's logs:
 
+  __TODO__: just choose to reference container by name or id, then say later
+  that you can reference containers by the other 
+
   ```bash
   # Reference the container by either name or id:
-  > docker logs -f <container_name/id>
+  > docker logs -f <container_name|id>
 
   # -f: (follow) show new logs as they are generated
   ```
@@ -204,8 +207,9 @@ Elasticsearch developers build and maintain.
   #     The source path must be an absolute path.
   ```
 
-  Use the `docker logs` command to watch Elasticsearch as it initializes. When
-  it's ready, let's query it to examine the data that we've seeded:
+  Use the `docker logs -f <container_name|id>` command to watch Elasticsearch as it
+  initializes. When it's ready, let's query it to examine the data that we've
+  seeded:
 
   ```bash
   > curl 'localhost:9200/_cat/indices?v'
@@ -258,7 +262,7 @@ Elasticsearch developers build and maintain.
 
 - Kill (or stop) the container when you are done.
 
-> So to recap, we now have a working instance of Elasticsearch running with seed
+> So to recap, we created a working instance of Elasticsearch running with seed
 > data that can be used for development, and we didn't have to install
 > Elasticsearch in our local development environment (yay for clean development
 > environments!). We also have an easy way to start and stop our Elasticsearch
@@ -609,7 +613,7 @@ Elasticsearch instance.
   # Once docker containers are in the same network, they can refer to each
   # other by container name
   > docker run --name tut-toy-flask --network tutorial -p 80:80 \
-      -e ES_HOST=tut-elasticsearch:9200 -d toy-flask:local
+      -e ES_HOST=tut-elasticsearch:9200 -d toy-flask:0.0.2
 
   > curl localhost/owner/bart
 
