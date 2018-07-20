@@ -41,7 +41,7 @@ general concepts if you are interested.
 First, clone this repository:
 
 ```bash
-> git clone https://github.com/leoyu037/docker_tutorial .
+> git clone https://github.com/leoyu037/docker_tutorial
 > cd docker_tutorial/
 ```
 
