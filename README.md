@@ -2,7 +2,7 @@
 
 The goal of this workshop is to provide a practical understanding of how to work
 with Docker and Docker Compose through some simple hands-on exercises. By the
-end of these, exercises you should be able to:
+end of these exercises you should be able to:
 
 - Write a simple Dockerfile and build a Docker image
 - Push/pull images from the Dockerhub image repository
@@ -29,10 +29,11 @@ and an account on Dockerhub per the requirements below:
 
 - [Docker](https://store.docker.com/search?offering=community&type=edition)
   - Also available via homebrew for macOS: `brew cask install docker`
+  - Make sure to open the Docker app
 - [Dockerhub Account](https://hub.docker.com/)
   - Register for a Dockerhub account
 
-Also, it's recommended to increase Docker's memory and CPU allocation to at least 4gb
+Before moving on, increase Docker's memory and CPU allocation to at least 4gb
 and 2 CPUS, since we'll be running quite a few containers simultaneously by the end.
 No prior knowledge of Docker is required for this tutorial, but see
 [here](https://docs.docker.com/engine/docker-overview/) for an overview of the
@@ -47,7 +48,7 @@ First, clone this repository:
 
 ## Reference
 
-If case you don't understand something or get lost or stuck, here are a few
+In case you don't understand something or get lost or stuck, here are a few
 helpful links with more in-depth explanations of various features:
 
 - Docker:
