@@ -117,11 +117,11 @@ Elasticsearch developers build and maintain.
   ```bash
   > docker run -p 9200:9200 -d elasticsearch:latest
 
-  # -p: map local port to container port.
+  # -p, --publish: map local port to container port.
   #     Elasticsearch runs on port 9200 by default inside the container.
   #     We need this mapping in order to be able to access the container port
   #     locally.
-  # -d: run the container in the background.
+  # -d, --detach: run the container in the background.
 
   > docker ps
 
@@ -142,7 +142,7 @@ Elasticsearch developers build and maintain.
   # Reference the container by either name or id:
   > docker logs -f <container_name|id>
 
-  # -f: (follow) show new logs as they are generated
+  # -f, --follow: show new logs as they are generated
   ```
   
   > If you choose to reference a container/image/network by id, you can use a
@@ -185,7 +185,7 @@ Elasticsearch developers build and maintain.
 
   > docker ps -a
 
-  # -a: show all containers, not just running ones
+  # -a, --all: show all containers, not just running ones
 
   # The container is status 'Exited'
   CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS                       PORTS               NAMES
@@ -203,7 +203,7 @@ Elasticsearch developers build and maintain.
   # will try to download the image first.
   > docker run -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ -d docker.elastic.co/elasticsearch/elasticsearch:6.3.0
 
-  # -v: mount a file/directory into the container's file system as a volume.
+  # -v, --volume: mount a file/directory into the container's file system as a volume.
   #     The source path must be an absolute path.
   ```
 
@@ -324,7 +324,7 @@ and use Docker Compose to work with frequently used setups.
 
   # 'docker-compose.yaml/yml' is the standard name of docker-compose
   # configurations, so we don't need to explicitly pass in a filename
-  # -d: start containers in the background
+  # -d, --detach: start containers in the background
   ```
 
   In addition to seeing our running containers with `docker ps`, we can also
@@ -424,7 +424,7 @@ DockerHub.
   ```bash
   > docker build -t toy-flask:0.0.1 .
 
-  # -t: (required) specify the image name and the tag
+  # -t, --tag: (required) specify the image name and the tag
   # The last arg specifies the directory of the Docker build context. All files
   # that are added from the local filesystem at build time are relative to this
   # directory.
@@ -443,8 +443,9 @@ DockerHub.
   
   # These two options together allow us to interact with a container from the
   # command line:
-  # -i: keep STDIN open
-  # -t: allocate a pseudo-tty
+  # -i, --interactive: keep STDIN open so you can keep typing
+  # -t, --tty: allocate a pseudo-tty to the container, connects your terminal
+  #     session to the container
   
   # From inside the container:
   /app > ls
@@ -579,7 +580,7 @@ Elasticsearch instance.
   # From docker_tutorial/exercise-3/:
   > docker build -f toy-flask/Dockerfile -t toy-flask:0.0.2 toy-flask/
 
-  # -f: specify the path of the Dockerfile
+  # -f, --file: specify the path of the Dockerfile
   ```
 
 - In order for containers to communicate with each other, they must be in the
@@ -725,11 +726,14 @@ Elasticsearch instance.
   > cd elasticsearch
   > docker-compose -p tutorial up -d
 
-  # -p: specify project name, which also specifies the network name; the same
-  #     can also be done by setting the COMPOSE_PROJECT_NAME env var
+  # -p, --project-name: specify project name, which also specifies the network
+  #     name; the same can also be done by setting the COMPOSE_PROJECT_NAME env var
 
   > cd ../toy-flask
   > docker-compose -p tutorial up -d
+  
+  # You'll get a warning about orphaned containers -- this is expected and can be
+  # ignored.
   ```
 
   If we inspect the network that was created, we'll see all five containers
@@ -849,6 +853,8 @@ also includes a scheduler process called Beat and a web UI called Flower.
   ```bash
   # From docker_tutorial/:
   > cd exercise-4/
+  
+  # You might have to brew install tree
   > tree toy-celery/
       
   toy-celery
@@ -1069,9 +1075,9 @@ also includes a scheduler process called Beat and a web UI called Flower.
   > cd ../postgres
   > docker-compose up -d
   > cd ../toy-celery
-  > docker-compose logs -t 50 -f
+  > docker-compose logs --tail 50 -f
   
-  # -t, --tail: show the last N lines of logs
+  # --tail: show the last N lines of logs
   
   # We should begin to see the reindexer tasks complete successfully
   # ...
