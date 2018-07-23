@@ -1,8 +1,12 @@
 # Docker Workshop
 
 The goal of this workshop is to provide a practical understanding of how to work
-with Docker and Docker Compose through some simple hands-on exercises. By the
-end of these exercises you should be able to:
+with Docker and Docker Compose through some simple hands-on exercises that build
+the following architecture:
+
+![Tutorial Architecture](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/app-architecture.png)
+
+By the end of these exercises, you should be able to:
 
 - Write a simple Dockerfile and build a Docker image
 - Push/pull images from the Dockerhub image repository
@@ -32,12 +36,12 @@ and an account on Dockerhub per the requirements below:
   - Make sure to open the Docker app
 - [Dockerhub Account](https://hub.docker.com/)
   - Register for a Dockerhub account
+- [Basic Docker Concepts](https://docs.docker.com/engine/docker-overview/)
+  - No prior knowledge of Docker is required for this tutorial, but this 10
+    minute overview might be helpful.
 
 Before moving on, increase Docker's memory and CPU allocation to at least 4gb
 and 2 CPUS, since we'll be running quite a few containers simultaneously by the end.
-No prior knowledge of Docker is required for this tutorial, but see
-[here](https://docs.docker.com/engine/docker-overview/) for an overview of the
-general concepts if you are interested.
 
 First, clone this repository:
 
