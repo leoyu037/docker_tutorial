@@ -143,18 +143,16 @@ Elasticsearch developers build and maintain.
   container name from the output of the `docker ps` command to examine the
   container's logs:
 
-  __TODO__: just choose to reference container by name or id, then say later
-  that you can reference containers by the other 
-
   ```bash
-  # Reference the container by either name or id:
-  > docker logs -f <container_name|id>
+  # Reference the container by name:
+  > docker logs -f <container_name>
 
   # -f, --follow: show new logs as they are generated
   ```
   
-  > If you choose to reference a container/image/network by id, you can use a
-  > truncated version of it as long as the truncated version is still unique.
+  > You can also reference Docker objects by id. If you choose to do so, you
+  > can use a truncated version of it as long as the truncated version is still
+  > unique.
 
   We should eventually see in the logs that Elasticsearch has started. Press
   `Ctrl-C` to exit the log tailing. To confirm that Elasticsearch is up, query
@@ -186,10 +184,10 @@ Elasticsearch developers build and maintain.
   startup. First, we should shut down our existing Elasticsearch container:
 
   ```bash
-  # Reference the container by either name or id:
-  > docker kill <container_name/id>
-  # OR a gentler way to stop containers:
-  > docker stop <container_name/id>
+  # Send SIGTERM:
+  > docker stop <container_name>
+  # OR send SIGKILL:
+  > docker kill <container_name>
 
   > docker ps -a
 
@@ -451,7 +449,7 @@ DockerHub.
   starting a second process inside the container (in this case, shell):
 
   ```bash
-  > docker exec -it <container_name/id> sh
+  > docker exec -it <container_name> sh
   
   # These two options together allow us to interact with a container from the
   # command line:
