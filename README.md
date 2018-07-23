@@ -456,8 +456,11 @@ DockerHub.
   # -i, --interactive: keep STDIN open so you can keep typing
   # -t, --tty: allocate a pseudo-tty to the container, connects your terminal
   #     session to the container
+  ```
+  
+  From inside the container:
 
-  # From inside the container:
+  ```bash
   /app > ls
 
   __pycache__         build               setup.py
@@ -469,6 +472,8 @@ DockerHub.
     1 root       0:00 {flask} /usr/local/bin/python /usr/local/bin/flask run -h 0.0.0.0 -p 80
    15 root       0:00 sh
    19 root       0:00 ps
+   
+  /app > exit
   ```
 
   As we can see, we're dropped directly into the container's working directory
@@ -513,7 +518,13 @@ DockerHub.
 - We are now able to run our image without having it cached locally:
 
   ```bash
-  > docker rmi <your_username>/toy-flask:0.0.1
+  # Remove the image from your environment
+  > docker rmi <your_username>/toy-flask:0.0.1 toy-flask:0.0.1
+  > docker images
+  
+  REPOSITORY                                      TAG                 IMAGE ID            CREATED             SIZE
+  # No more toy-flask images
+  
   > docker run -p 80:80 -d <your_username>/toy-flask:0.0.1
   ```
 
