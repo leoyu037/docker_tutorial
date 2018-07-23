@@ -149,7 +149,7 @@ Elasticsearch developers build and maintain.
 
   # -f, --follow: show new logs as they are generated
   ```
-  
+
   > You can also reference Docker objects by id. If you choose to do so, you
   > can use a truncated version of it as long as the truncated version is still
   > unique.
@@ -213,7 +213,7 @@ Elasticsearch developers build and maintain.
   #     The source path must be an absolute path.
   ```
 
-  Use the `docker logs -f <container_name|id>` command to watch Elasticsearch as it
+  Use the `docker logs -f <container_name>` command to watch Elasticsearch as it
   initializes. When it's ready, let's query it to examine the data that we've
   seeded:
 
@@ -450,33 +450,33 @@ DockerHub.
 
   ```bash
   > docker exec -it <container_name> sh
-  
+
   # These two options together allow us to interact with a container from the
   # command line:
   # -i, --interactive: keep STDIN open so you can keep typing
   # -t, --tty: allocate a pseudo-tty to the container, connects your terminal
   #     session to the container
-  
+
   # From inside the container:
   /app > ls
-  
+
   __pycache__         build               setup.py
   app.py              dist                toy_flask.egg-info
-  
+
   /app > ps
-  
+
   PID   USER     TIME   COMMAND
     1 root       0:00 {flask} /usr/local/bin/python /usr/local/bin/flask run -h 0.0.0.0 -p 80
    15 root       0:00 sh
-   19 root       0:00 ps  
+   19 root       0:00 ps
   ```
-  
+
   As we can see, we're dropped directly into the container's working directory
   (which we defined in the Dockerfile), and it contains the two files that we
   added to the image, as well as a bunch of build artifacts from installing the
-  Python dependencies into the image. And besides our shell and ps processes, 
+  Python dependencies into the image. And besides our shell and ps processes,
   there is only the Flask process running in the container.
-  
+
   > Notice that Flask is PID 1--it's best practice to ensure that the container's
   > main process is PID 1 if you want your process to receive signals properly
   > from Docker. See this [Elastic.co blogpost](https://www.elastic.io/nodejs-as-pid-1-under-docker-images/)
@@ -743,7 +743,7 @@ Elasticsearch instance.
 
   > cd ../toy-flask
   > docker-compose -p tutorial up -d
-  
+
   # You'll get a warning about orphaned containers -- this is expected and can be
   # ignored.
   ```
@@ -801,23 +801,23 @@ Elasticsearch instance.
 
   Let's see our Nginx container doing round-robin-style load balancing as we
   give it queries:
-  
+
   ```bash
   # From docker_tutorial/exercise-3/toy-flask/:
   > curl localhost
-  
+
   Hello World!
-  
+
   > curl localhost/owner/grandma
-  
+
   {"age":300,"id":"ZuSDkGQBd9122Iwh-Plc","name":"My Grandma"}
-  
+
   > curl localhost/owner/grandma/pets
-  
+
   [{"breed":"orange tabby","id":"Z-SDkGQBd9122Iwh-Pli","name":"Garfield","owner_id":"ZuSDkGQBd9122Iwh-Plc","species":"cat"},{"breed":"beagle","id":"aOSDkGQBd9122Iwh-Plp","name":"Odie","owner_id":"ZuSDkGQBd9122Iwh-Plc","species":"dog"}]
 
-  > docker-compose -p tutorial logs 
-  
+  > docker-compose -p tutorial logs
+
   # ...
   toy-flask-1_1  | 172.20.0.4 - - [16/Jul/2018 20:39:11] "GET / HTTP/1.0" 200 -
   nginx_1        | 172.20.0.1 - - [16/Jul/2018:20:39:11 +0000] "GET / HTTP/1.1" 200 12 "-" "curl/7.54.0"
@@ -826,14 +826,14 @@ Elasticsearch instance.
   toy-flask-3_1  | 172.20.0.4 - - [16/Jul/2018 20:41:06] "GET /owner/grandma/pets HTTP/1.0" 200 -
   nginx_1        | 172.20.0.1 - - [16/Jul/2018:20:41:06 +0000] "GET /owner/grandma/pets HTTP/1.1" 200 234 "-" "curl/7.54.0"
   ```
-  
+
 - Let's stop and remove the containers and networks that were created by Docker
   Compose:
 
   ```bash
   # From docker_tutorial/exercise-3/toy-flask/:
   > docker-compose -p tutorial down --remove-orphans
-  
+
   # --remove-orphans: remove containers in the project that aren't specified in
   #                   in the current Docker Compose configuration (in this case,
   #                   the Elasticsearch container)
@@ -844,7 +844,7 @@ Elasticsearch instance.
 > application stack with load balancing. On top of that, we're now able to do
 > it easily and consistently with a couple of reusable configuration files and
 > short commands. That we were able to reuse the Docker Compose configuration
-> from the first exercise shows that we have the flexibility to both work with 
+> from the first exercise shows that we have the flexibility to both work with
 > parts of a stack and its entirety without rewriting config--that's incredibly
 > convenient!
 
@@ -853,8 +853,8 @@ Elasticsearch instance.
 ## Exercise 4
 
 In this exercise, we'll learn a basic local development flow for working with a
-distributed app while tying all of our containers together. A toy Python app 
-using [Celery](http://www.celeryproject.org/) has been provided. 
+distributed app while tying all of our containers together. A toy Python app
+using [Celery](http://www.celeryproject.org/) has been provided.
 
 Celery is a distributed task queue that typically uses RabbitMQ or Redis as the
 message broker and Python workers deployed to one or more servers. Our setup
@@ -865,10 +865,10 @@ also includes a scheduler process called Beat and a web UI called Flower.
   ```bash
   # From docker_tutorial/:
   > cd exercise-4/
-  
+
   # You might have to brew install tree
   > tree toy-celery/
-      
+
   toy-celery
   ├── Dockerfile
   ├── README.md
@@ -884,14 +884,14 @@ also includes a scheduler process called Beat and a web UI called Flower.
       ├── schedule.py         # Celery task schedule
       └── task.py             # Celery task definitions
   ```
-  
+
   Our Celery app defines a dummy 'Hello World!' task that's scheduled to run
   every 5 seconds on its own queue. There are also two tasks to reindex owner
   and pet data from two Postgres databases to our Elasticsearch, and those run
   every 15 seconds. The database and Elasticsearch hosts are configurable via
   environment variables. The Dockerfile has a similar structure to the
   Dockerfile for our toy Flask app:
-  
+
   ```bash
   # From docker_tutorial/exercise-4/:
   > cd toy-celery/
@@ -931,13 +931,13 @@ also includes a scheduler process called Beat and a web UI called Flower.
   The Docker Compose config defines a Redis container that will serve as our
   Celery app's task broker, two workers configured to service the two different
   queues, and the Beat scheduler and Flower UI:
-  
+
   ```bash
   # From docker_tutorial/exercise-4/toy-celery/:
   > cat docker-compose.yaml
   ```
   ```yaml
-  # docker-compose.yaml     
+  # docker-compose.yaml
   version: '3'
   services:
     toy-celery-broker-backend:
@@ -990,10 +990,10 @@ also includes a scheduler process called Beat and a web UI called Flower.
         - '5555:5555'
       command: sh -c 'sleep 5; ./scripts/start-celery.sh'
   ```
-  
+
   All of our containers, save for the broker, use the same source and thus the
   same image (that's just how Celery works).
-  
+
   > Another thing to note is that in each of our Celery services, we're
   > mounting the project directory into the working directory of the container,
   > effectively replacing the container's source with the source from our local
@@ -1001,21 +1001,21 @@ also includes a scheduler process called Beat and a web UI called Flower.
   > testing code changes in your app without having to rebuild the image each
   > time. However, in general it's better to have a Dockerfile optimized for
   > quick, cached builds in a local development flow.
-  
+
 - Let's build our toy Celery app image and start our app:
 
   ```bash
   # From docker_tutorial/exercise-4/toy-celery/:
   > docker-compose build
-  
+
   # Let's set COMPOSE_PROJECT_NAME so we don't have to keep specifying
   # '-p tutorial' in all of our Docker Compose commands for the rest of the
   # tutorial.
   > export COMPOSE_PROJECT_NAME=tutorial
-  
+
   > docker-compose up -d
   > docker-compose logs -f
-  
+
   # ...
   toy-celery-beat_1            | [2018-07-18 18:50:23,028: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
   toy-celery-worker-hello_1    | [2018-07-18 18:50:23,033: WARNING/ForkPoolWorker-1] 099f39f8d55a: Hello World!
@@ -1069,17 +1069,17 @@ also includes a scheduler process called Beat and a web UI called Flower.
   toy-celery-worker-tut_1      |
   # ...
   ```
-  
+
   We should see from the logs that our Beat container is scheduling the two tasks
   as expected and the workers dequeueing the tasks off of their respective queues
   and executing them. We can also visit `localhost:5555` in a browser for the app
   UI. It looks like the dummy task is running properly, but the reindexer tasks
   are failing (because it can't connect to the Postgres databases that we didn't
   start).
-  
+
 - To fix this, `Ctrl-C` out of the Docker Compose log tailing and start the
   Elasticsearch and Postgres databases:
-  
+
   ```bash
   # From docker_tutorial/exercise-4/toy-celery/:
   > cd ../elasticsearch
@@ -1088,9 +1088,9 @@ also includes a scheduler process called Beat and a web UI called Flower.
   > docker-compose up -d
   > cd ../toy-celery
   > docker-compose logs --tail 50 -f
-  
+
   # --tail: show the last N lines of logs
-  
+
   # We should begin to see the reindexer tasks complete successfully
   # ...
   toy-celery-beat_1            | [2018-07-18 18:50:18,028: INFO/MainProcess] Scheduler: Sending due task hello-every-5s (print.hello)
@@ -1101,16 +1101,16 @@ also includes a scheduler process called Beat and a web UI called Flower.
   toy-celery-worker-tut_1      | [2018-07-18 18:50:18,292: WARNING/ForkPoolWorker-1] pet ETL result: {'success': 8, 'failed': 0, 'failed_items': []}
   # ...
   ```
-  
+
   > Side note: if you look at `postgres/docker-compose.yaml`, you'll see that the
   > two services are actually running two different versions of Postgres. This is a
   > perfect example of how Docker's environment isolation makes running apps
   > concurrently easy and clean--I haven't tried to run two different versions of a
   > datastore on my local development machine at the same time, but I imagine that
   > it'd be painful.
-  
+
 - Let's comment out the dummy task since we don't need it running anymore:
-  
+
   ```python
   # toy_app/schedule.py
   CELERYBEAT_SCHEDULE = {
@@ -1136,26 +1136,26 @@ also includes a scheduler process called Beat and a web UI called Flower.
     },
   }
   ```
-  
+
   Stop the Beat container and start it again:
-  
+
   ```bash
   # From docker_tutorial/exercise-4/toy-celery/:
   > docker-compose kill toy-celery-beat
   > docker-compose up -d toy-celery-beat
   > docker-compose logs -f toy-celery-beat
-  
+
   toy-celery-beat_1            | [2018-07-18 19:25:32,083: INFO/MainProcess] Scheduler: Sending due task reindex-owners (docker_tut.reindex_owners)
   toy-celery-beat_1            | [2018-07-18 19:25:32,091: INFO/MainProcess] Scheduler: Sending due task reindex-pets (docker_tut.reindex_pets)
   toy-celery-beat_1            | [2018-07-18 19:25:47,091: INFO/MainProcess] Scheduler: Sending due task reindex-pets (docker_tut.reindex_pets)
   toy-celery-beat_1            | [2018-07-18 19:25:47,094: INFO/MainProcess] Scheduler: Sending due task reindex-owners (docker_tut.reindex_owners)
   ```
-  
+
   We should see that the new Beat container doesn't enqueue the dummy task
   anymore, leaving the worker servicing that queue idle. And we didn't have to
   rebuild our image because we're mounting the source from our local file system
   into the container.
-  
+
 - To tie this all together, start the toy Flask setup:
 
   ```bash
@@ -1163,7 +1163,7 @@ also includes a scheduler process called Beat and a web UI called Flower.
   > cd ../toy-flask/
   > docker-compose up -d
   > docker ps
-  
+
   CONTAINER ID        IMAGE                                                 COMMAND                  CREATED                  STATUS              PORTS                              NAMES
   <container_id>      nginx                                                 "nginx -g 'daemon of…"   Less than a second ago   Up 4 seconds        0.0.0.0:80->80/tcp                 tutorial_nginx_1
   <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask-1_1
@@ -1179,15 +1179,15 @@ also includes a scheduler process called Beat and a web UI called Flower.
   <container_id>      postgres:11-alpine                                    "docker-entrypoint.s…"   24 seconds ago           Up 49 seconds       0.0.0.0:5433->5432/tcp             tutorial_owner_db_1
 
   > curl localhost/owner/alice
-  
+
   {"age":20,"created":"2018-07-18T19:28:26.291558+00:00","id":"1","last_modified":"2018-07-18T19:28:26.291558+00:00","name":"Alice","owner_id":1}
   ```
-  
+
   It all works! We have 12 containers representing a full application stack
   running on our local machine. This is the end of the tutorial, but feel free
   to play around and make changes to the system to get a feel for the Docker
   Compose development flow. Some things to try:
-  
+
   - Changing data in the databases/Elasticsearch and watching it propagate
     through the system
   - Changing application code, stopping the relevant container, rebuilding, and
