@@ -4,7 +4,7 @@ The goal of this workshop is to provide a practical understanding of how to work
 with Docker and Docker Compose through some simple hands-on exercises that build
 the following architecture:
 
-![Tutorial Architecture](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/app-architecture.png)
+![Tutorial Architecture](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/app-architecture.png)
 > _Architecture: a distributed task queue that indexes data from two Postgres
 > databases into an Elasticsearch instance, which is queried by a load balanced
 > API._
@@ -93,7 +93,7 @@ Elasticsearch developers build and maintain.
   deprecated because Elasticsearch has chosen to self-host its Docker
   images--ignore for now).
 
-  ![Official Elasticsearch Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/official-elasticsearch-repo-screenshot.png)
+  ![Official Elasticsearch Repo](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/official-elasticsearch-repo-screenshot.png)
   > _Official Elasticsearch image repository on DockerHub (it's deprecated though)_
 
 - Let's download the latest Elasticsearch as our first image:
@@ -422,11 +422,11 @@ DockerHub.
   > In most cases, if you click on a tag in for an official Docker repo, you
   > should be able to view the Dockerfile that the tag was built from.
   >
-  > ![Official Python Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/official-python-repo-screenshot.png)
+  > ![Official Python Repo](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/official-python-repo-screenshot.png)
   > > _Official Python image repository on DockerHub. Usually, you can click the
   > > image tag to see the Dockerfile used to generate the image._
   >
-  > ![Python 3-alpine Dockerfile](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/python-3-alpine-dockerfile-screenshot.png)
+  > ![Python 3-alpine Dockerfile](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/python-3-alpine-dockerfile-screenshot.png)
   > > _Python 3-alpine Dockerfile_
 
 - Let's build and run the image and verify that it works:
@@ -491,7 +491,7 @@ DockerHub.
   to create a new repository for our image. Go to [DockerHub](https://hub.docker.com),
   login, and create a new public repo called `toy-flask`:
 
-  ![New Dockerhub Repo](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/dockerhub-create-repo-screenshot.png)
+  ![New Dockerhub Repo](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/dockerhub-create-repo-screenshot.png)
   > _New public image repository in my account_
 
   Note that the repo's full name will be `<your_username>/toy-flask`. Then login
@@ -512,7 +512,7 @@ DockerHub.
 
   Your newly uploaded tag should now appear at `https://hub.docker.com/r/<your_username>/toy-flask/tags/`.
 
-  ![Newly Uploaded Tag](https://github.com/leoyu037/docker_tutorial/blob/revised-workshops/.readme-assets/dockerhub-newly-uploaded-tag-screenshot.png)
+  ![Newly Uploaded Tag](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/dockerhub-newly-uploaded-tag-screenshot.png)
   > _New tag pushed to my image repository_
 
 - We are now able to run our image without having it cached locally:
