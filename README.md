@@ -1,5 +1,7 @@
 # Docker Workshop
 
+__Approximate Time Commitment: 2 hours__
+
 The goal of this workshop is to provide a practical understanding of how to work
 with Docker and Docker Compose through some simple hands-on exercises that build
 the following architecture:
