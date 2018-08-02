@@ -1229,4 +1229,5 @@ Please help me make this tutorial better by taking this
 
 - [Cheatsheet](https://github.com/leoyu037/cheatsheets/blob/master/docker.md)
 - [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+- [Processes in containers should not run as root](https://medium.com/@mccode/processes-in-containers-should-not-run-as-root-2feae3f0df3b)
 - [Python Docker Driver](https://github.com/docker/docker-py)
