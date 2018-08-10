@@ -520,7 +520,9 @@ DockerHub.
 - We are now able to run our image without having it cached locally:
 
   ```bash
-  # Remove the image from your environment
+  # Remove the container and image from your environment
+  > docker kill <container_name>
+  > docker rm <container_name>
   > docker rmi <your_username>/toy-flask:0.0.1 toy-flask:0.0.1
   > docker images
   
