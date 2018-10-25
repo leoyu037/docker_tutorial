@@ -94,7 +94,7 @@ Elasticsearch developers build and maintain.
   ![Official Elasticsearch Repo](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/official-elasticsearch-repo-screenshot.png)
   > _Official Elasticsearch image repository on DockerHub_
 
-- Let's download the a version of Elasticsearch as our first image:
+- Let's download a version of Elasticsearch as our first image:
 
   ```bash
   # On the command line:
