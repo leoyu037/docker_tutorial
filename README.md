@@ -91,21 +91,17 @@ Elasticsearch developers build and maintain.
   versions) available for use. The `tags` tab contains a more exhaustive list of
   tags.
 
-  (__NOTE__: you'll see that the official Elasticsearch repo has been
-  deprecated because Elasticsearch has chosen to self-host its Docker
-  images--ignore for now).
-
   ![Official Elasticsearch Repo](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/official-elasticsearch-repo-screenshot.png)
-  > _Official Elasticsearch image repository on DockerHub (it's deprecated though)_
+  > _Official Elasticsearch image repository on DockerHub_
 
-- Let's download the latest Elasticsearch as our first image:
+- Let's download the a version of Elasticsearch as our first image:
 
   ```bash
   # On the command line:
-  > docker pull elasticsearch    # specifying an image with no tag defaults to 'latest'
+  > docker pull elasticsearch:6.4.1
 
-  # Or more explicitly:
-  > docker pull elasticsearch:latest
+  # [Don't do this] specifying an image with no tag defaults to 'latest'
+  > docker pull elasticsearch
   ```
 
   > Anyone can build and register public Docker images to DockerHub, but like
