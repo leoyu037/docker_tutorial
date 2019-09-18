@@ -6,7 +6,7 @@ The goal of this workshop is to provide a practical understanding of how to work
 with Docker and Docker Compose through some simple hands-on exercises that build
 the following architecture:
 
-![Tutorial Architecture](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/app-architecture.png)
+![Tutorial Architecture](.readme-assets/app-architecture.png)
 > _Architecture: a distributed task queue that indexes data from two Postgres
 > databases into an Elasticsearch instance, which is queried by a load balanced
 > API._
