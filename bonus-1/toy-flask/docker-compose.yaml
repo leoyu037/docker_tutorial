@@ -1,0 +1,11 @@
+version: '3'
+services:
+  toy-flask:
+    build: .
+    image: toy-flask:local
+    environment:
+      ES_HOST: elasticsearch:9200
+    ports:
+      - 80:80
+    volumes:
+      - ./app.py:/app/app.py

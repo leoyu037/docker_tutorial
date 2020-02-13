@@ -1,5 +1,7 @@
 # Docker Workshop
 
+__Last updated: Jan 31, 2020. First published: Jul 23, 2018__
+
 __Approximate Time Commitment: 2 hours__
 
 The goal of this workshop is to provide a practical understanding of how to work
@@ -16,9 +18,15 @@ By the end of these exercises, you should be able to:
 - Write a simple Dockerfile and build a Docker image
 - Push/pull images from the Dockerhub image repository
 - Manage images, containers, networks locally
-- Run multiple images locally with proper networking between them
+- Run multiple containers locally with proper networking between them
 - Inspect/debug running containers
 - Write Docker Compose configurations to model your application architecture
+
+_NOTE_: Note that not all of the Dockerfiles/code in this tutorial represent
+best practices for generating production-ready images. They are simplified for
+the sake of making the examples clear. Feel free to use the [further
+reading](#further-reading) section as a starting point for optimizing your
+images.
 
 ## Table of Contents
 
@@ -28,8 +36,10 @@ By the end of these exercises, you should be able to:
 1. [Exercise 2: creating and pushing images](#exercise-2)
 1. [Exercise 3: networking, container orchestration](#exercise-3)
 1. [Exercise 4: local development and debugging](#exercise-4)
+1. [Bonus 1: unit testing and multistage builds](#bonus-1)
+1. [Bonus 2: integration testing](#bonus-2)
 1. [Conclusion](#conclusion)
-1. [More Resources](#more-resources)
+1. [Further Reading](#further-reading)
 
 ## Requirements
 
@@ -39,6 +49,7 @@ and an account on Dockerhub per the requirements below:
 - [Docker](https://store.docker.com/search?offering=community&type=edition)
   - Also available via homebrew for macOS: `brew cask install docker`
   - Make sure to open the Docker app
+- [Docker Compose](https://docs.docker.com/compose/install/)
 - [Dockerhub Account](https://hub.docker.com/)
   - Register for a Dockerhub account
 - [Basic Docker Concepts](https://docs.docker.com/engine/docker-overview/)
@@ -98,9 +109,10 @@ Elasticsearch developers build and maintain.
 
   ```bash
   # On the command line:
-  > docker pull elasticsearch:6.4.1
+  > docker pull elasticsearch:6.8.6
 
-  # [Don't do this] specifying an image with no tag defaults to 'latest'
+  # Specifying an image with no tag defaults to 'latest' [don't do this--
+  # Elasticsearch no longer maintains a 'latest' tag]
   > docker pull elasticsearch
   ```
 
@@ -115,13 +127,13 @@ Elasticsearch developers build and maintain.
   > docker images
 
   REPOSITORY                                      TAG                 IMAGE ID            CREATED             SIZE
-  elasticsearch                                   latest              <image_id>          9 days ago          486MB
+  elasticsearch                                   6.8.6               <image_id>          9 days ago          486MB
   ```
 
 - Start Elasticsearch and examine our running containers:
 
   ```bash
-  > docker run -p 9200:9200 -d elasticsearch:latest
+  > docker run -p 9200:9200 -d elasticsearch:6.8.6
 
   # -p, --publish: map local port to container port.
   #     Elasticsearch runs on port 9200 by default inside the container.
@@ -134,7 +146,7 @@ Elasticsearch developers build and maintain.
   # You should see your new container running w/ the port mapped, along with
   # the container name (scroll right):
   CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS              PORTS                              NAMES
-  <container_id>      elasticsearch:latest   "/docker-entrypoint.…"   About an hour ago   Up About an hour    0.0.0.0:9200->9200/tcp, 9300/tcp   <container_name>
+  <container_id>      elasticsearch:6.8.6    "/docker-entrypoint.…"   About an hour ago   Up About an hour    0.0.0.0:9200->9200/tcp, 9300/tcp   <container_name>
   ```
 
 - Now that the container is running, we can start playing with it. Use the
@@ -193,7 +205,7 @@ Elasticsearch developers build and maintain.
 
   # The container is status 'Exited'
   CONTAINER ID        IMAGE                  COMMAND                  CREATED             STATUS                       PORTS               NAMES
-  <container_id>      elasticsearch:latest   "/docker-entrypoint.…"   10 minutes ago      Exited (137) 2 seconds ago                       <container_name>
+  <container_id>      elasticsearch:6.8.6    "/docker-entrypoint.…"   10 minutes ago      Exited (137) 2 seconds ago                       <container_name>
   ```
 
   Now create a new Elasticsearch instance with some seed data:
@@ -202,10 +214,9 @@ Elasticsearch developers build and maintain.
   # From docker_tutorial/:
   > cd exercise-1/elasticsearch/
 
-  # We're going to use an officially supported image this time. If you try to
-  # create a container from an image that you don't have stored locally, Docker
-  # will try to download the image first.
-  > docker run -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ -d docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+  # If you try to create a container from an image that you don't have stored
+  # locally, Docker will try to download the image first.
+  > docker run -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ -d elasticsearch:6.4.1
 
   # -v, --volume: mount a file/directory into the container's file system as a volume.
   #     The source path must be an absolute path.
@@ -285,7 +296,7 @@ appropriate, but most of the time it's easier to write a `docker-compose.yaml`
 and use Docker Compose to work with frequently used setups.
 
 - Continuing with our Elasticsearch example, we can turn our Docker command into
-  a `docker-compose.yaml` (which has conveniently been provided):
+  a `docker-compose.yaml`:
 
   ```bash
   # From docker_tutorial/:
@@ -297,7 +308,7 @@ and use Docker Compose to work with frequently used setups.
   version: '3'
   services:
     elasticsearch:
-      image: docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+      image: elasticsearch:6.4.1
       environment:
         discovery.type: single-node
       ports:
@@ -314,7 +325,7 @@ and use Docker Compose to work with frequently used setups.
   command:
 
   ```bash
-  docker run -e discovery.type=single-node -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+  docker run -e discovery.type=single-node -p 9200:9200 -v `pwd`/data/:/usr/share/elasticsearch/data/ docker.elastic.co/elasticsearch/elasticsearch:6.4.1
   ```
 
   > Refer back to the [reference links](#reference) for more documentation
@@ -417,7 +428,7 @@ DockerHub.
   > All Docker images inherit from some parent image. In this case, we are basing
   > our image off of an [official Python 3 image](https://hub.docker.com/_/python/)
   > that was built off of an [official Alpine Linux image](https://hub.docker.com/_/alpine/).
-  > In most cases, if you click on a tag in for an official Docker repo, you
+  > In most cases, if you click on a tag in an official Docker repo, you
   > should be able to view the Dockerfile that the tag was built from.
   >
   > ![Official Python Repo](https://github.com/leoyu037/docker_tutorial/blob/master/.readme-assets/official-python-repo-screenshot.png)
@@ -455,7 +466,7 @@ DockerHub.
   # -t, --tty: allocate a pseudo-tty to the container, connects your terminal
   #     session to the container
   ```
-  
+
   From inside the container:
 
   ```bash
@@ -470,7 +481,7 @@ DockerHub.
     1 root       0:00 {flask} /usr/local/bin/python /usr/local/bin/flask run -h 0.0.0.0 -p 80
    15 root       0:00 sh
    19 root       0:00 ps
-   
+
   /app > exit
   ```
 
@@ -521,10 +532,10 @@ DockerHub.
   > docker rm <container_name>
   > docker rmi <your_username>/toy-flask:0.0.1 toy-flask:0.0.1
   > docker images
-  
+
   REPOSITORY                                      TAG                 IMAGE ID            CREATED             SIZE
   # No more toy-flask images
-  
+
   > docker run -p 80:80 -d <your_username>/toy-flask:0.0.1
   ```
 
@@ -629,7 +640,7 @@ Elasticsearch instance.
   # From docker_tutorial/exercise-3/:
   > docker run --name tut-elasticsearch --network tutorial -p 9200:9200 \
       -v `pwd`/elasticsearch/data/:/usr/share/elasticsearch/data/ \
-      -d docker.elastic.co/elasticsearch/elasticsearch:6.3.0
+      -d docker.elastic.co/elasticsearch/elasticsearch:6.4.1
 
   # --name: give the container a custom name
   # --network: connect the container to a network
@@ -1011,7 +1022,10 @@ also includes a scheduler process called Beat and a web UI called Flower.
   > file system. You'll see that this can be sort of a shortcut for quickly
   > testing code changes in your app without having to rebuild the image each
   > time. However, in general it's better to have a Dockerfile optimized for
-  > quick, cached builds in a local development flow.
+  > quick, cached builds in a local development flow. See
+  > [here](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache)
+  > for more details.
+
 
 - Let's build our toy Celery app image and start our app:
 
@@ -1113,12 +1127,12 @@ also includes a scheduler process called Beat and a web UI called Flower.
   # ...
   ```
 
-  > Side note: if you look at `postgres/docker-compose.yaml`, you'll see that the
-  > two services are actually running two different versions of Postgres. This is a
-  > perfect example of how Docker's environment isolation makes running apps
-  > concurrently easy and clean--I haven't tried to run two different versions of a
-  > datastore on my local development machine at the same time, but I imagine that
-  > it'd be painful.
+  > Side note: if you look at `postgres/docker-compose.yaml`, you'll see that
+  > the two services are actually running two different versions of Postgres.
+  > This is a perfect example of how Docker's environment isolation makes
+  > running apps concurrently easy and clean--I haven't tried to run two
+  > different versions of a datastore directly on my laptop at the same time,
+  > but I imagine that it'd be painful.
 
 - Let's comment out the dummy task since we don't need it running anymore:
 
@@ -1165,7 +1179,8 @@ also includes a scheduler process called Beat and a web UI called Flower.
   We should see that the new Beat container doesn't enqueue the dummy task
   anymore, leaving the worker servicing that queue idle. And we didn't have to
   rebuild our image because we're mounting the source from our local file system
-  into the container.
+  into the container (this isn't true for compiled languages like Java and
+  Go where we would need to rebuild the image before restarting).
 
 - To tie this all together, start the toy Flask setup:
 
@@ -1185,7 +1200,7 @@ also includes a scheduler process called Beat and a web UI called Flower.
   <container_id>      toy-celery:local                                      "./scripts/start-cel…"   Less than a second ago   Up 20 seconds                                          tutorial_toy-celery-worker-hello_1
   <container_id>      toy-celery:local                                      "./scripts/start-cel…"   Less than a second ago   Up 20 seconds                                          tutorial_toy-celery-worker-tut_1
   <container_id>      toy-celery:local                                      "sh -c 'rm celerybea…"   Less than a second ago   Up 20 seconds                                          tutorial_toy-celery-beat_1
-  <container_id>      docker.elastic.co/elasticsearch/elasticsearch:6.3.0   "/usr/local/bin/dock…"   8 seconds ago            Up 34 seconds       0.0.0.0:9200->9200/tcp, 9300/tcp   tutorial_elasticsearch_1
+  <container_id>      docker.elastic.co/elasticsearch/elasticsearch:6.4.1   "/usr/local/bin/dock…"   8 seconds ago            Up 34 seconds       0.0.0.0:9200->9200/tcp, 9300/tcp   tutorial_elasticsearch_1
   <container_id>      postgres:10-alpine                                    "docker-entrypoint.s…"   24 seconds ago           Up 49 seconds       0.0.0.0:5434->5432/tcp             tutorial_pet_db_1
   <container_id>      postgres:11-alpine                                    "docker-entrypoint.s…"   24 seconds ago           Up 49 seconds       0.0.0.0:5433->5432/tcp             tutorial_owner_db_1
 
@@ -1214,18 +1229,199 @@ also includes a scheduler process called Beat and a web UI called Flower.
 
 --------------------------------------------------------------------------------
 
+# Bonus 1
+
+Part of creating optimized Docker images is making sure that they're as small
+as possible. As such, you might not want to leave build/test dependencies/code
+in your image since they are unnecessary at runtime. This example will
+demonstrate how to use multistage Dockerfiles to run unit tests as part of the
+build while leaving the test code and dependencies out of the final image.
+
+- Let's look at the Dockerfile in our slightly modified toy-flask setup:
+
+  ```bash
+  # From docker_tutorial/:
+  > cd bonus-1/toy-flask
+  > cat Dockerfile
+  ```
+  ```Dockerfile
+  # Dockerfile
+  FROM python:3.8-slim as base-image
+
+  WORKDIR /app
+
+  # Install Python dependencies
+  COPY setup.py setup.py
+  RUN pip install -e .
+
+  # ------------------------------------------------------------------------------
+
+  FROM base-image as unit-test-image
+
+  # Install test dependencies
+  RUN pip install -e '.[testing]'
+
+  # Copy source code
+  COPY app.py app.py
+
+  # Copy test code and run tests. Build won't continue unless tests pass
+  COPY tests/ tests/
+  RUN pytest tests/
+
+  # ------------------------------------------------------------------------------
+
+  FROM base-image as final-image
+
+  # Copy source code
+  COPY app.py app.py
+
+  CMD exec flask run -h 0.0.0.0 -p 80
+
+  EXPOSE 80
+  ```
+
+  This Dockerfile defines 3 different build stages, each defined by a new `FROM`
+  stament. Our setup defines a `base-image` that both the `unit-test-image` and
+  the `final-image` are based off of. During the build, every statement is
+  executed in order, but only the last stage produces the final image. The unit
+  tests in the second stage must pass before moving onto the last stage, but the
+  since the last stage is based on the `base-image` rather than the
+  `unit-test-image`, the final image will not have the test dependencies and the
+  test code.
+
+  > NOTE: Because of how Docker caches image layers to optimize build times, the
+  > source code is copied once in both the latter stages to avoid needlessly
+  > reinstalling test dependencies when there are only code changes.
+
+  You will also notice that there is a dummy unit test in `tests/`. Let's see
+  this test run when building our image:
+
+  ```bash
+  # From docker_tutorial/bonus-1/toy-flask/:
+  > docker-compose build
+  Building toy-flask
+  ...
+  Step 9/13 : RUN pytest tests/
+  ---> Running in de03eafd1440
+  ============================= test session starts ==============================
+  platform linux -- Python 3.8.1, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+  rootdir: /app
+  plugins: flake8-1.0.4, cov-2.8.1, mock-2.0.0
+  collected 1 item
+
+  tests/unit/app_test.py ..                                                 [100%]
+
+  ============================== 2 passed in 0.03s ===============================
+  ...
+  Step 10/13 : FROM base-image as final-image
+  ...
+  Step 13/13 : EXPOSE 80
+  ---> Running in 898d226066ee
+  Removing intermediate container 898d226066ee
+  ---> 2ab6df9e8805
+  Successfully built 2ab6df9e8805
+  Successfully tagged toy-flask:local
+  ```
+
+  If we inspect the working directory in the final image, we will see that the
+  test code is not there:
+
+  ```bash
+  # From docker_tutorial/bonus-1/toy-flask/:
+  > docker-compose run toy-flask ls /app
+  app.py  setup.py  toy_flask.egg-info
+  ```
+
+- And if we modify the test to fail, rebuilding the image will also fail to
+  produce a new image because the build does not pass the unit test stage:
+
+  ```bash
+  # From docker_tutorial/bonus-1/toy-flask/:
+  > vim tests/unit/app_test.py
+  > cat tests/unit/app_test.py
+  ```
+  ```python
+  # app_test.py
+  import app
+
+  def test_dummy():
+      assert False
+
+  def test_hello():
+      assert app.hello() == 'Hello World!'
+  ```
+  ```bash
+  # From docker_tutorial/bonus-1/toy-flask/:
+  > docker-compose build
+  Building toy-flask
+  ...
+  Step 7/13 : COPY app.py app.py
+  ---> Using cache
+  ---> c1d2f7f289a3
+  Step 8/13 : COPY tests/ tests/
+  ---> aabc8abd9e46
+  Step 9/13 : RUN pytest tests/
+  ---> Running in 4eb2c444ed67
+  ============================= test session starts ==============================
+  platform linux -- Python 3.8.1, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
+  rootdir: /app
+  plugins: flake8-1.0.4, cov-2.8.1, mock-2.0.0
+  collected 2 items
+
+  tests/unit/app_test.py F.                                                [100%]
+
+  =================================== FAILURES ===================================
+  __________________________________ test_dummy __________________________________
+
+      def test_dummy():
+  >       assert False
+  E       assert False
+
+  tests/unit/app_test.py:5: AssertionError
+  ========================= 1 failed, 1 passed in 0.24s ==========================
+  ERROR: Service 'toy-flask' failed to build: The command '/bin/sh -c pytest tests/' returned a non-zero code: 1
+  ```
+
+  Notice also that rebuilding the image and running the tests was very fast
+  because Docker was able to reuse many of the previous image layers and skip
+  the reinstalling of our app and test dependencies. Let's reset the test that
+  we changed before moving on:
+
+  ```bash
+  # From docker_tutorial/bonus-1/toy-flask/:
+  > git checkout tests/unit/app_test.py
+  ```
+
+> Cool, we're also able to bake the running of our unit tests into our build.
+> We can run them in a consistent, portable environment, and we can use them as
+> a quality gate to prevent images that don't pass tests from even being built
+> in CI.
+
+--------------------------------------------------------------------------------
+
+# Bonus 2
+
+Docker also makes integration testing very reliable and portable because it allows
+you to consistently restart your system with the same state.
+
+--------------------------------------------------------------------------------
+
 ## Conclusion
 
 Hopefully going through these exercises has given you a taste for how to work
-with Docker and what local development can be like. How to do Docker-based
-testing, continuous integration, deployment, etc. is a topic for another day ;)
+with Docker and what local development can be like.
 
 Please help me make this tutorial better by taking this
 [survey](https://goo.gl/forms/YSXTzzcND0hQKtB13). Thanks!
 
-## More Resources
+## Further Reading
 
 - [Cheatsheet](https://github.com/leoyu037/cheatsheets/blob/master/docker.md)
 - [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 - [Processes in containers should not run as root](https://medium.com/@mccode/processes-in-containers-should-not-run-as-root-2feae3f0df3b)
-- [Python Docker Driver](https://github.com/docker/docker-py)
+- [Python Docker driver](https://github.com/docker/docker-py)
+- Multistage builds (examples in Python):
+  - https://pythonspeed.com/articles/activate-virtualenv-dockerfile/
+  - https://pythonspeed.com/articles/smaller-python-docker-images/
+  - https://pythonspeed.com/articles/multi-stage-docker-python/
+  - https://pythonspeed.com/articles/faster-multi-stage-builds/
