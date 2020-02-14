@@ -1398,11 +1398,16 @@ build while leaving the test code and dependencies out of the final image.
 
 --------------------------------------------------------------------------------
 
-# Bonus 2
+# Bonus 2 [WIP]
 
 Docker also makes integration testing very reliable and portable because it
 allows you to consistently restart your system with the same state and
 completely tear it down afterwards.
+
+TODO: inspect new docker compose
+TODO: build test image
+TODO: manually start ES, toy flask, and run integration tests
+TODO: use script to run it repeatedly (or possibly all with docker-compose)
 
 --------------------------------------------------------------------------------
 
