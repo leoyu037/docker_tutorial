@@ -10,12 +10,4 @@ setup(
         'flask>=0.10',
         'requests',
     ],
-    extras_require={
-        'testing': [
-            'pytest',
-            'pytest-cov',
-            'pytest-flake8',
-            'pytest-mock',
-        ],
-    },
 )

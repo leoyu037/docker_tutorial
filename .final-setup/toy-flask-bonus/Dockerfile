@@ -18,7 +18,7 @@ COPY app.py app.py
 
 # Copy test code and run tests. Build won't continue unless tests pass
 COPY tests/ tests/
-RUN pytest tests/
+RUN pytest tests/unit/
 
 # ------------------------------------------------------------------------------
 

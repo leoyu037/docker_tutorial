@@ -3,7 +3,7 @@ import os
 from flask import Flask, jsonify
 import requests
 
-ES_HOST = os.environ['ES_HOST']
+ES_HOST = os.environ.get('ES_HOST', 'localhost')
 
 app = Flask(__name__)
 
