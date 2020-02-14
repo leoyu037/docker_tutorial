@@ -1407,7 +1407,7 @@ completely tear it down afterwards.
 TODO: inspect new docker compose
 TODO: build test image
 TODO: manually start ES, toy flask, and run integration tests
-TODO: use script to run it repeatedly (or possibly all with docker-compose)
+TODO: use script to run it repeatedly
 
 --------------------------------------------------------------------------------
 
