@@ -21,6 +21,7 @@ def _get_owner(owner_name):
     return owner
 
 
+# TODO: change owner to owners
 @app.route('/owner/<owner_name>')
 def get_owner(owner_name):
     try:

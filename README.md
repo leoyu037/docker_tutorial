@@ -1297,7 +1297,7 @@ build while leaving the test code and dependencies out of the final image.
 
   ```bash
   # From docker_tutorial/bonus-1/toy-flask/:
-  > docker-compose build
+  > docker-compose build toy-flask
   Building toy-flask
   ...
   Step 9/13 : RUN pytest tests/unit/
@@ -1351,7 +1351,7 @@ build while leaving the test code and dependencies out of the final image.
   ```
   ```bash
   # From docker_tutorial/bonus-1/toy-flask/:
-  > docker-compose build
+  > docker-compose build toy-flask
   Building toy-flask
   ...
   Step 7/13 : COPY app.py app.py

@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-GIT_ROOT="`git rev-parse --show-toplevel`"
-COMPOSE_PROJECT_NAME=tutorial
+export GIT_ROOT="`git rev-parse --show-toplevel`"
+export COMPOSE_PROJECT_NAME=tutorial
 
 function teardown {
   echo "Tearing down Elasticsearch containers"
@@ -50,5 +50,5 @@ wait_for_toy_flask
 
 # Run tests
 echo "Running tests"
-docker-compose run toy-flask-test pytest tests/integration
+docker-compose run toy-flask-test pytest -s tests/integration
 
