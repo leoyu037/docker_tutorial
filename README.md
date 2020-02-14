@@ -710,7 +710,7 @@ Elasticsearch instance.
   # docker-compose.yaml
   version: '3'
   services:
-    toy-flask-1:
+    toy-flask:
       build: .
       image: toy-flask:local
       environment:
@@ -803,7 +803,7 @@ Elasticsearch instance.
                   // ...
               },
               "<container_id>": {
-                  "Name": "tutorial_toy-flask-1_1",
+                  "Name": "tutorial_toy-flask_1",
                   // ...
               },
               "<container_id>": {
@@ -841,7 +841,7 @@ Elasticsearch instance.
   > docker-compose -p tutorial logs
 
   # ...
-  toy-flask-1_1  | 172.20.0.4 - - [16/Jul/2018 20:39:11] "GET / HTTP/1.0" 200 -
+  toy-flask_1  | 172.20.0.4 - - [16/Jul/2018 20:39:11] "GET / HTTP/1.0" 200 -
   nginx_1        | 172.20.0.1 - - [16/Jul/2018:20:39:11 +0000] "GET / HTTP/1.1" 200 12 "-" "curl/7.54.0"
   toy-flask-2_1  | 172.20.0.4 - - [16/Jul/2018 20:40:23] "GET /owner/grandma HTTP/1.0" 200 -
   nginx_1        | 172.20.0.1 - - [16/Jul/2018:20:40:23 +0000] "GET /owner/grandma HTTP/1.1" 200 60 "-" "curl/7.54.0"
@@ -1192,7 +1192,7 @@ also includes a scheduler process called Beat and a web UI called Flower.
 
   CONTAINER ID        IMAGE                                                 COMMAND                  CREATED                  STATUS              PORTS                              NAMES
   <container_id>      nginx                                                 "nginx -g 'daemon of…"   Less than a second ago   Up 4 seconds        0.0.0.0:80->80/tcp                 tutorial_nginx_1
-  <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask-1_1
+  <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask_1
   <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask-2_1
   <container_id>      toy-flask:local                                       "/bin/sh -c 'flask r…"   Less than a second ago   Up 5 seconds                                           tutorial_toy-flask-3_1
   <container_id>      toy-celery:local                                      "sh -c 'sleep 5; ./s…"   Less than a second ago   Up 19 seconds       0.0.0.0:5555->5555/tcp             tutorial_toy-celery-flower_1
@@ -1256,7 +1256,7 @@ build while leaving the test code and dependencies out of the final image.
 
   # ------------------------------------------------------------------------------
 
-  FROM base-image as unit-test-image
+  FROM base-image as test-image
 
   # Install test dependencies
   RUN pip install -e '.[testing]'
@@ -1266,7 +1266,7 @@ build while leaving the test code and dependencies out of the final image.
 
   # Copy test code and run tests. Build won't continue unless tests pass
   COPY tests/ tests/
-  RUN pytest tests/
+  RUN pytest tests/unit/
 
   # ------------------------------------------------------------------------------
 
@@ -1281,13 +1281,12 @@ build while leaving the test code and dependencies out of the final image.
   ```
 
   This Dockerfile defines 3 different build stages, each defined by a new `FROM`
-  stament. Our setup defines a `base-image` that both the `unit-test-image` and
-  the `final-image` are based off of. During the build, every statement is
-  executed in order, but only the last stage produces the final image. The unit
-  tests in the second stage must pass before moving onto the last stage, but the
-  since the last stage is based on the `base-image` rather than the
-  `unit-test-image`, the final image will not have the test dependencies and the
-  test code.
+  statement. Our setup defines a `base-image` that both the `test-image` and the
+  `final-image` are based off of. During the build, every statement is executed
+  in order, but only the last stage produces the final image. The unit tests in
+  the second stage must pass before moving onto the last stage, but the since
+  the last stage is based on the `base-image` rather than the `test-image`, the
+  final image will not have the test dependencies and the test code.
 
   > NOTE: Because of how Docker caches image layers to optimize build times, the
   > source code is copied once in both the latter stages to avoid needlessly
@@ -1301,7 +1300,7 @@ build while leaving the test code and dependencies out of the final image.
   > docker-compose build
   Building toy-flask
   ...
-  Step 9/13 : RUN pytest tests/
+  Step 9/13 : RUN pytest tests/unit/
   ---> Running in de03eafd1440
   ============================= test session starts ==============================
   platform linux -- Python 3.8.1, pytest-5.3.5, py-1.8.1, pluggy-0.13.1
@@ -1311,7 +1310,7 @@ build while leaving the test code and dependencies out of the final image.
 
   tests/unit/app_test.py ..                                                 [100%]
 
-  ============================== 2 passed in 0.03s ===============================
+  ============================== 2 passed in 0.19s ===============================
   ...
   Step 10/13 : FROM base-image as final-image
   ...
@@ -1379,7 +1378,7 @@ build while leaving the test code and dependencies out of the final image.
 
   tests/unit/app_test.py:5: AssertionError
   ========================= 1 failed, 1 passed in 0.24s ==========================
-  ERROR: Service 'toy-flask' failed to build: The command '/bin/sh -c pytest tests/' returned a non-zero code: 1
+  ERROR: Service 'toy-flask' failed to build: The command '/bin/sh -c pytest tests/unit/' returned a non-zero code: 1
   ```
 
   Notice also that rebuilding the image and running the tests was very fast
@@ -1389,7 +1388,7 @@ build while leaving the test code and dependencies out of the final image.
 
   ```bash
   # From docker_tutorial/bonus-1/toy-flask/:
-  > git checkout tests/unit/app_test.py
+  > git restore tests/unit/app_test.py
   ```
 
 > Cool, we're also able to bake the running of our unit tests into our build.
@@ -1401,8 +1400,9 @@ build while leaving the test code and dependencies out of the final image.
 
 # Bonus 2
 
-Docker also makes integration testing very reliable and portable because it allows
-you to consistently restart your system with the same state.
+Docker also makes integration testing very reliable and portable because it
+allows you to consistently restart your system with the same state and
+completely tear it down afterwards.
 
 --------------------------------------------------------------------------------
 
