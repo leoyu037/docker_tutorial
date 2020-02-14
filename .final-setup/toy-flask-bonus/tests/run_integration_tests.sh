@@ -50,5 +50,5 @@ wait_for_toy_flask
 
 # Run tests
 echo "Running tests"
-pytest tests/integration
+docker-compose run toy-flask-test pytest tests/integration
 

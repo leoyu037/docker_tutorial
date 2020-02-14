@@ -8,7 +8,7 @@ RUN pip install -e .
 
 # ------------------------------------------------------------------------------
 
-FROM base-image as unit-test-image
+FROM base-image as test-image
 
 # Install test dependencies
 RUN pip install -e '.[testing]'

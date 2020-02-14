@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 services:
   toy-flask:
     build: .
@@ -25,3 +25,13 @@ services:
       - 80:80
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+
+  toy-flask-test:
+    build:
+      context: .
+      target: test-image
+    image: toy-flask:local-test
+    environment:
+      ES_HOST: elasticsearch:9200
+    # TODO: see if we can make integration tests run as part of docker-compose up using depends_on and healthchecks
+    command: echo "Run me separately!"
