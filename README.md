@@ -1336,7 +1336,7 @@ build while leaving the test code and dependencies out of the final image.
 
   ```bash
   # From docker_tutorial/bonus-1/toy-flask/:
-  > vim tests/unit/app_test.py
+  > vim tests/unit/app_test.py  # Make a False assertion
   > cat tests/unit/app_test.py
   ```
   ```python

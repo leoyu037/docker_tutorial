@@ -36,4 +36,24 @@ services:
       TOY_FLASK_HOST: nginx:80
     volumes:
       - ./tests:/app/tests
-    command: echo "Run me separately!"
+    # Run integration tests
+    command: pytest tests/integration/
+
+  #   # TODO: decide if it'd be better to roll integration test into unit test image
+  #   # Pros:
+  #   # - Can leverage cache of app image for build
+  #   # - One less Dockerfile to manage
+  #   # Cons:
+  #   # - Couples integration tests with app code -- integration tests shouldn't
+  #   #   need any app code to run
+  #   toy-flask-integration-test:
+  #     build:
+  #       context: .
+  #       dockerfile: tests/integration/Dockerfile-integration_test
+  #     image: toy-flask-integration-test:local
+  #     environment:
+  #       ES_HOST: elasticsearch:9200
+  #       TOY_FLASK_HOST: nginx:80
+  #     volumes:
+  #       - ./tests:/app/tests/integration/
+  #     command: pytest tests/integration/
