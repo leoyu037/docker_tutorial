@@ -1,5 +1,14 @@
 version: '3'
 services:
+  toy-flask:
+    build: .
+    image: toy-flask:local
+    environment:
+      - RUN_MODE=api
+    ports:
+      - 80:80
+    volumes:
+      - ./:/srv/
   toy-celery-broker-backend:
     image: redis
     ports:
@@ -13,20 +22,20 @@ services:
       - C_FORCE_ROOT=True
       - RUN_MODE=worker
       - QUEUES=hello
-  toy-celery-worker-tut:
-    build: .
-    image: toy-celery:local
-    volumes:
-      - ./:/srv/
-    environment:
-      - C_FORCE_ROOT=True
-      - RUN_MODE=worker
-      - QUEUES=docker_tut
-      - ES_HOST=elasticsearch
-      - OWNER_DB_HOST=owner_db
-      - OWNER_DB_PORT=5432
-      - PET_DB_HOST=pet_db
-      - PET_DB_PORT=5432
+  # toy-celery-worker-tut:
+  #   build: .
+  #   image: toy-celery:local
+  #   volumes:
+  #     - ./:/srv/
+  #   environment:
+  #     - C_FORCE_ROOT=True
+  #     - RUN_MODE=worker
+  #     - QUEUES=docker_tut
+  #     - ES_HOST=http://elasticsearch:9200
+  #     - OWNER_DB_HOST=owner_db
+  #     - OWNER_DB_PORT=5432
+  #     - PET_DB_HOST=pet_db
+  #     - PET_DB_PORT=5432
   toy-celery-beat:
     build: .
     image: toy-celery:local

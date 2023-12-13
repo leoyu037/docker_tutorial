@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install python dependencies
 COPY setup.py setup.py
-RUN python setup.py install
+RUN pip install -e .
 
 # Copy source code
 COPY app.py app.py

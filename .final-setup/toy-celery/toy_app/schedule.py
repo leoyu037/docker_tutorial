@@ -6,17 +6,17 @@ CELERYBEAT_SCHEDULE = {
         'options': {'queue': 'hello'},
     },
 
-    # Reindex owners every 15s
-    'reindex-owners': {
-        'task': 'docker_tut.reindex_owners',
-        'schedule': 15,
-        'options': {'queue': 'docker_tut'},
-    },
+    # # Reindex owners every 15s
+    # 'reindex-owners': {
+    #     'task': 'docker_tut.reindex_owners',
+    #     'schedule': 15,
+    #     'options': {'queue': 'docker_tut'},
+    # },
 
-    # Reindex pets every 15s
-    'reindex-pets': {
-        'task': 'docker_tut.reindex_pets',
-        'schedule': 15,
-        'options': {'queue': 'docker_tut'},
-    },
+    # # Reindex pets every 15s
+    # 'reindex-pets': {
+    #     'task': 'docker_tut.reindex_pets',
+    #     'schedule': 15,
+    #     'options': {'queue': 'docker_tut'},
+    # },
 }

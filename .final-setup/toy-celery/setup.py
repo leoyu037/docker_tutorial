@@ -6,8 +6,10 @@ setup(
     install_requires=[
         'celery',
         'elasticsearch',
+        'flask',
         'flower',
         'psycopg2',
         'redis',
+        'requests',
     ],
 )

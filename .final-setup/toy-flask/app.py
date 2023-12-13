@@ -1,5 +1,6 @@
 import os
 
+from celery import Celery
 from flask import Flask, jsonify
 import requests
 
@@ -7,10 +8,50 @@ ES_HOST = os.environ['ES_HOST']
 
 app = Flask(__name__)
 
+# Celery
+broker_backend = 'redis://toy-celery-broker-backend:6379//0'
+celery_app = Celery(
+    'toy_app',
+    broker=broker_backend,
+    backend=broker_backend,
+)
+
 
 @app.route('/')
 def hello():
     return 'Hello World!'
+
+
+@app.post("/purge_hello_queue")
+def purge_stats_queues():
+    """ Purge hello queue
+
+    Useful when the queue is backed up and we want to clear it out.
+
+    Code lifted directly from the command line tool:
+        https://github.com/celery/celery/blob/main/celery/bin/purge.py#L56
+    """
+    def purge(conn, queue: str):
+        try:
+            return conn.default_channel.queue_purge(queue) or 0
+        except conn.channel_errors:
+            return 0
+
+    queues = ["hello"]
+    print("Purging queue...")
+    messages = 0
+    # with celery_app.connection_for_write() as conn:
+    #     messages = sum(purge(conn, queue) for queue in queues)
+
+    # if messages:
+    #     print(f"Purged {messages} messages from hello queue.")
+    # else:
+    #     print("No messages purged from hello queue.")
+
+    return {
+        "status": "OK",
+        "messages_cleared": messages,
+    }
 
 
 def _get_owner(owner_name):

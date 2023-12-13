@@ -9,15 +9,16 @@ fi
 
 if [ "$RUN_MODE" == 'worker' ]; then
   echo "STARTING TOY CELERY WORKER WITH QUEUES $queues"
-  exec celery worker -A toy_app.app -Q ${queues} --concurrency 1
+  exec celery -A toy_app.app worker -Q ${queues} --concurrency 1
 elif [ "$RUN_MODE" == 'beat' ]; then
   echo "STARTING TOY CELERY BEAT"
-  exec celery beat -A toy_app.app -l info
+  exec celery -A toy_app.app beat -l info
 elif [ "$RUN_MODE" == 'flower' ]; then
   echo "STARTING TOY CELERY FLOWER"
-  exec celery flower -A toy_app.app --max-tasks=10000
-elif [ "$RUN_MODE" == 'noop' ]; then
-  echo "NOOP"
+  exec celery -A toy_app.app flower --max-tasks=10000
+elif [ "$RUN_MODE" == 'api' ]; then
+  echo "STARTING API"
+  FLASK_APP=toy_app/app.py:flask_app exec flask run -h 0.0.0.0 -p 80
 else
   echo "RUN_MODE $RUN_MODE blank/not supported."
 fi
